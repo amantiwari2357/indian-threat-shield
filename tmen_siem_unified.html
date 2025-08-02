@@ -1,0 +1,2301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMEN SIEM - Unified Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* TMEN Header */
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-graphic {
+            position: relative;
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-circle {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #2d5a2d 0%, #1a3d1a 100%);
+            top: 6px;
+            left: 6px;
+        }
+
+        .logo-swirl {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .logo-swirl::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 0deg, #4CAF50 60deg, #66BB6A 120deg, #81C784 180deg, #A5D6A7 240deg, #C8E6C9 300deg, transparent 360deg);
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .logo-text {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 1.3em;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 1px;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            background: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-item {
+            color: #666;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .nav-item.active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #45a049;
+            transform: translateY(-1px);
+        }
+
+        .btn.secondary {
+            background: #6c757d;
+        }
+
+        .btn.secondary:hover {
+            background: #5a6268;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .sidebar-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 15px;
+            color: #666;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .sidebar-menu a:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .sidebar-menu a.active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        /* Content Area */
+        .content-area {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-height: 600px;
+        }
+
+        .page-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            border-left: 4px solid #4CAF50;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .card-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .card-description {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Metrics Row */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .metric-card.danger {
+            border-left-color: #F44336;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .metric-card.danger .metric-value {
+            color: #F44336;
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        /* Section Content */
+        .section-content {
+            display: none;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .quick-actions h3 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.3em;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: white;
+            border: 2px solid #4CAF50;
+            color: #4CAF50;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            background: #4CAF50;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Alerts Table */
+        .alerts-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .alerts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .alerts-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .alerts-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .alerts-table th {
+            background: #f8f9fa;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: bold;
+            color: #333;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .alerts-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+
+        .alerts-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .page-btn.active {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        /* Log Table */
+        .log-table-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .table-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .log-table th {
+            background: #f8f9fa;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: bold;
+            color: #333;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .log-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+
+        .log-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .log-level {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .log-level.info {
+            background: #4CAF50;
+        }
+
+        .log-level.warning {
+            background: #FF9800;
+        }
+
+        .log-level.error {
+            background: #F44336;
+        }
+
+        .log-level.critical {
+            background: #9C27B0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+            
+            .content-area {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .metrics-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-bar {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- TMEN Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-graphic">
+                    <div class="logo-circle"></div>
+                    <div class="logo-swirl"></div>
+                </div>
+                <div class="logo-text">TMEN SIEM</div>
+            </div>
+            <div style="color: white; text-align: right;">
+                <div style="font-size: 0.9em; opacity: 0.8;">Unified Security Dashboard</div>
+            </div>
+        </div>
+
+        <!-- Navigation Bar -->
+        <div class="nav-bar">
+            <div class="nav-left">
+                <span class="nav-item">tmen.</span>
+                <span class="nav-item active">Dashboard</span>
+                <span class="nav-item">Security events</span>
+            </div>
+            <div class="nav-right">
+                <button class="btn secondary">API</button>
+                <select style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option>default</option>
+                </select>
+                <button class="btn secondary">Explore agent</button>
+                <button class="btn">Generate report</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-title">TMEN SIEM Modules</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#dashboard" class="active" onclick="showSection('dashboard')">🏠 Main Dashboard</a></li>
+                    <li><a href="#analytics" onclick="showSection('analytics')">📊 Advanced Analytics</a></li>
+                    <li><a href="#modules" onclick="showSection('modules')">🔧 Security Modules</a></li>
+                    <li><a href="#logs" onclick="showSection('logs')">📝 Log Management</a></li>
+                    <li><a href="#alerts" onclick="showSection('alerts')">🚨 Alert Center</a></li>
+                    <li><a href="#agents" onclick="showSection('agents')">🤖 Agent Management</a></li>
+                    <li><a href="#threats" onclick="showSection('threats')">🌐 Threat Intelligence</a></li>
+                    <li><a href="#compliance" onclick="showSection('compliance')">📋 Compliance Center</a></li>
+                </ul>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Dashboard Section -->
+                <div id="dashboard" class="section-content active">
+                    <div class="page-title">🏠 TMEN SIEM - Main Dashboard</div>
+
+                    <!-- Metrics Row -->
+                    <div class="metrics-row">
+                        <div class="metric-card">
+                            <div class="metric-value" id="total-agents">42</div>
+                            <div class="metric-label">Total Agents</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="active-agents">32</div>
+                            <div class="metric-label">Active Agents</div>
+                        </div>
+                        <div class="metric-card danger">
+                            <div class="metric-value" id="critical-alerts">15</div>
+                            <div class="metric-label">Critical Alerts</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="system-status">100%</div>
+                            <div class="metric-label">System Status</div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Grid -->
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card" onclick="showSection('analytics')">
+                            <div class="card-icon">📊</div>
+                            <div class="card-title">Advanced Analytics</div>
+                            <div class="card-description">
+                                Real-time charts, metrics, and detailed security analytics with MITRE ATT&CK mapping.
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="showSection('modules')">
+                            <div class="card-icon">🔧</div>
+                            <div class="card-title">Security Modules</div>
+                            <div class="card-description">
+                                Complete SIEM modules including AWS, Office 365, GCP, GitHub integrations.
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="showSection('logs')">
+                            <div class="card-icon">📝</div>
+                            <div class="card-title">Log Management</div>
+                            <div class="card-description">
+                                Comprehensive log collection, analysis, and real-time log monitoring.
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="showSection('alerts')">
+                            <div class="card-icon">🚨</div>
+                            <div class="card-title">Alert Center</div>
+                            <div class="card-description">
+                                Security alert management, threat detection, and incident response.
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="showSection('agents')">
+                            <div class="card-icon">🤖</div>
+                            <div class="card-title">Agent Management</div>
+                            <div class="card-description">
+                                Multi-platform agent monitoring, health checks, and deployment management.
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="showSection('threats')">
+                            <div class="card-icon">🌐</div>
+                            <div class="card-title">Threat Intelligence</div>
+                            <div class="card-description">
+                                Network threat analysis, vulnerability assessment, and threat hunting.
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="showSection('compliance')">
+                            <div class="card-icon">📋</div>
+                            <div class="card-title">Compliance Center</div>
+                            <div class="card-description">
+                                PCI DSS, GDPR, HIPAA, NIST compliance monitoring and reporting.
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">⚙️</div>
+                            <div class="card-title">System Settings</div>
+                            <div class="card-description">
+                                Configuration management, user administration, and system preferences.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <h3>🚀 Quick Actions</h3>
+                        <div class="actions-grid">
+                            <button class="action-btn" onclick="generateReport()">📄 Generate Report</button>
+                            <button class="action-btn" onclick="scanSystem()">🔍 System Scan</button>
+                            <button class="action-btn" onclick="updateAgents()">🔄 Update Agents</button>
+                            <button class="action-btn" onclick="backupData()">💾 Backup Data</button>
+                            <button class="action-btn" onclick="exportLogs()">📤 Export Logs</button>
+                            <button class="action-btn" onclick="emergencyMode()">🚨 Emergency Mode</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div id="analytics" class="section-content">
+                    <div class="page-title">📊 Advanced Analytics</div>
+
+                    <!-- Metrics Row -->
+                    <div class="metrics-row">
+                        <div class="metric-card">
+                            <div class="metric-value" id="total-alerts-analytics">54,249</div>
+                            <div class="metric-label">Total Alerts</div>
+                        </div>
+                        <div class="metric-card danger">
+                            <div class="metric-value" id="high-alerts">4,132</div>
+                            <div class="metric-label">Level 12+ Alerts</div>
+                        </div>
+                        <div class="metric-card danger">
+                            <div class="metric-value" id="auth-failures">3,214</div>
+                            <div class="metric-label">Auth Failures</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="auth-success">349</div>
+                            <div class="metric-label">Auth Success</div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <div class="chart-title">Alert Level Evolution</div>
+                            <div class="chart-wrapper">
+                                <canvas id="alertEvolutionChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-title">Top 5 Agents</div>
+                            <div class="chart-wrapper">
+                                <canvas id="topAgentsChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-title">Alerts Evolution - Top 5 Agents</div>
+                            <div class="chart-wrapper">
+                                <canvas id="alertsEvolutionChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-title">Top MITRE ATT&CKs</div>
+                            <div class="chart-wrapper">
+                                <canvas id="mitreChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alerts Table -->
+                    <div class="alerts-section">
+                        <div class="alerts-header">
+                            <div class="alerts-title">Security Alerts</div>
+                            <div style="font-size: 0.9em; color: #666;">Showing 1-10 of 54,249 results</div>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table class="alerts-table">
+                                <thead>
+                                    <tr>
+                                        <th>Time ↓</th>
+                                        <th>Agent</th>
+                                        <th>Agent name</th>
+                                        <th>Technique(s)</th>
+                                        <th>Tactic(s)</th>
+                                        <th>Description</th>
+                                        <th>Level</th>
+                                        <th>Rule ID</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="alertsTableBody">
+                                    <!-- Alerts will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Pagination -->
+                        <div class="pagination">
+                            <button class="page-btn">‹</button>
+                            <button class="page-btn active">1</button>
+                            <button class="page-btn">2</button>
+                            <button class="page-btn">3</button>
+                            <button class="page-btn">4</button>
+                            <button class="page-btn">5</button>
+                            <span style="margin: 0 10px;">...</span>
+                            <button class="page-btn">1000</button>
+                            <button class="page-btn">›</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logs Section -->
+                <div id="logs" class="section-content">
+                    <div class="page-title">📝 Log Management & Analysis</div>
+
+                    <!-- Log Stats -->
+                    <div class="metrics-row">
+                        <div class="metric-card">
+                            <div class="metric-value" id="total-logs">125,847</div>
+                            <div class="metric-label">Total Logs</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="info-logs">89,234</div>
+                            <div class="metric-label">Info Logs</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="warning-logs">23,456</div>
+                            <div class="metric-label">Warning Logs</div>
+                        </div>
+                        <div class="metric-card danger">
+                            <div class="metric-value" id="error-logs">13,157</div>
+                            <div class="metric-label">Error Logs</div>
+                        </div>
+                    </div>
+
+                    <!-- Log Table -->
+                    <div class="log-table-container">
+                        <div class="table-header">
+                            <div class="table-title">📋 Recent Security Logs</div>
+                            <div style="font-size: 0.9em; color: #666;">Showing 1-20 of 125,847 logs</div>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="log-table">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Level</th>
+                                        <th>Agent</th>
+                                        <th>Source</th>
+                                        <th>Message</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="logTableBody">
+                                    <!-- Logs will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="pagination">
+                            <button class="page-btn">‹</button>
+                            <button class="page-btn active">1</button>
+                            <button class="page-btn">2</button>
+                            <button class="page-btn">3</button>
+                            <button class="page-btn">4</button>
+                            <button class="page-btn">5</button>
+                            <span style="margin: 0 10px;">...</span>
+                            <button class="page-btn">6292</button>
+                            <button class="page-btn">›</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Modules Section -->
+                <div id="modules" class="section-content">
+                    <div class="page-title">🔧 Security Modules</div>
+
+                    <!-- Module Stats -->
+                    <div class="metrics-row">
+                        <div class="metric-card">
+                            <div class="metric-value" id="total-modules">12</div>
+                            <div class="metric-label">Total Modules</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="active-modules">10</div>
+                            <div class="metric-label">Active Modules</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="connected-services">8</div>
+                            <div class="metric-label">Connected Services</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="module-health">95%</div>
+                            <div class="metric-label">Module Health</div>
+                        </div>
+                    </div>
+
+                    <!-- Module Grid -->
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <div class="card-icon">☁️</div>
+                            <div class="card-title">AWS Security Hub</div>
+                            <div class="card-description">
+                                AWS security findings, GuardDuty alerts, and CloudTrail logs integration.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Active</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">📧</div>
+                            <div class="card-title">Office 365 Security</div>
+                            <div class="card-description">
+                                Microsoft 365 security events, Azure AD logs, and Exchange Online protection.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Active</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">🌐</div>
+                            <div class="card-title">Google Cloud Platform</div>
+                            <div class="card-description">
+                                GCP security logs, Cloud Audit logs, and Security Command Center integration.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Active</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">💻</div>
+                            <div class="card-title">GitHub Security</div>
+                            <div class="card-description">
+                                GitHub security alerts, dependency scanning, and repository monitoring.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #FF9800; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Warning</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">🔐</div>
+                            <div class="card-title">Active Directory</div>
+                            <div class="card-description">
+                                Windows AD security events, user authentication, and group policy monitoring.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Active</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">🛡️</div>
+                            <div class="card-title">Firewall Management</div>
+                            <div class="card-description">
+                                Network firewall logs, intrusion detection, and traffic analysis.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Active</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">📱</div>
+                            <div class="card-title">Mobile Security</div>
+                            <div class="card-description">
+                                Mobile device management, app security, and device compliance monitoring.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #F44336; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Error</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">🔍</div>
+                            <div class="card-title">Vulnerability Scanner</div>
+                            <div class="card-description">
+                                Automated vulnerability scanning, patch management, and security assessments.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module Status Table -->
+                    <div class="log-table-container">
+                        <div class="table-header">
+                            <div class="table-title">📋 Module Status Overview</div>
+                            <div style="font-size: 0.9em; color: #666;">Real-time module status and health</div>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="log-table">
+                                <thead>
+                                    <tr>
+                                        <th>Module Name</th>
+                                        <th>Status</th>
+                                        <th>Last Sync</th>
+                                        <th>Events Today</th>
+                                        <th>Health Score</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="moduleTableBody">
+                                    <!-- Module data will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Center Section -->
+                <div id="alerts" class="section-content">
+                    <div class="page-title">🚨 Alert Center</div>
+
+                    <!-- Alert Stats -->
+                    <div class="metrics-row">
+                        <div class="metric-card">
+                            <div class="metric-value" id="total-alerts-center">2,847</div>
+                            <div class="metric-label">Total Alerts</div>
+                        </div>
+                        <div class="metric-card danger">
+                            <div class="metric-value" id="critical-alerts-center">156</div>
+                            <div class="metric-label">Critical Alerts</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="resolved-alerts">1,234</div>
+                            <div class="metric-label">Resolved Today</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="avg-response">4.2min</div>
+                            <div class="metric-label">Avg Response Time</div>
+                        </div>
+                    </div>
+
+                    <!-- Alert Filters -->
+                    <div class="log-filters">
+                        <h3 style="margin-bottom: 15px; color: #333;">🔍 Alert Filters</h3>
+                        <div class="filters-grid">
+                            <div class="filter-group">
+                                <label class="filter-label">Alert Level</label>
+                                <select class="filter-input">
+                                    <option>All Levels</option>
+                                    <option>Critical</option>
+                                    <option>High</option>
+                                    <option>Medium</option>
+                                    <option>Low</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label class="filter-label">Status</label>
+                                <select class="filter-input">
+                                    <option>All Status</option>
+                                    <option>New</option>
+                                    <option>In Progress</option>
+                                    <option>Resolved</option>
+                                    <option>Escalated</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label class="filter-label">Source</label>
+                                <select class="filter-input">
+                                    <option>All Sources</option>
+                                    <option>Firewall</option>
+                                    <option>IDS/IPS</option>
+                                    <option>Endpoint</option>
+                                    <option>Network</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label class="filter-label">Search</label>
+                                <input type="text" class="filter-input" placeholder="Search alerts...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alert Table -->
+                    <div class="log-table-container">
+                        <div class="table-header">
+                            <div class="table-title">🚨 Security Alerts</div>
+                            <div style="font-size: 0.9em; color: #666;">Showing 1-20 of 2,847 alerts</div>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="log-table">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Level</th>
+                                        <th>Source</th>
+                                        <th>Description</th>
+                                        <th>Status</th>
+                                        <th>Assignee</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="alertCenterTableBody">
+                                    <!-- Alert data will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="pagination">
+                            <button class="page-btn">‹</button>
+                            <button class="page-btn active">1</button>
+                            <button class="page-btn">2</button>
+                            <button class="page-btn">3</button>
+                            <button class="page-btn">4</button>
+                            <button class="page-btn">5</button>
+                            <span style="margin: 0 10px;">...</span>
+                            <button class="page-btn">142</button>
+                            <button class="page-btn">›</button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <h3>🚀 Alert Management Actions</h3>
+                        <div class="actions-grid">
+                            <button class="action-btn" onclick="acknowledgeAlerts()">✅ Acknowledge All</button>
+                            <button class="action-btn" onclick="escalateAlerts()">📤 Escalate Critical</button>
+                            <button class="action-btn" onclick="createIncident()">📋 Create Incident</button>
+                            <button class="action-btn" onclick="exportAlerts()">📤 Export Alerts</button>
+                            <button class="action-btn" onclick="runInvestigation()">🔍 Run Investigation</button>
+                            <button class="action-btn" onclick="updateRules()">⚙️ Update Rules</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent Management Section -->
+                <div id="agents" class="section-content">
+                    <div class="page-title">🤖 Agent Management</div>
+
+                    <!-- Agent Stats -->
+                    <div class="metrics-row">
+                        <div class="metric-card">
+                            <div class="metric-value" id="total-agents-manage">42</div>
+                            <div class="metric-label">Total Agents</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="online-agents">38</div>
+                            <div class="metric-label">Online Agents</div>
+                        </div>
+                        <div class="metric-card danger">
+                            <div class="metric-value" id="offline-agents">4</div>
+                            <div class="metric-label">Offline Agents</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="agent-health">90%</div>
+                            <div class="metric-label">Health Score</div>
+                        </div>
+                    </div>
+
+                    <!-- Agent Grid -->
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <div class="card-icon">🖥️</div>
+                            <div class="card-title">Windows Agents</div>
+                            <div class="card-description">
+                                25 Windows servers and workstations with active monitoring.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">23 Online</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">🐧</div>
+                            <div class="card-title">Linux Agents</div>
+                            <div class="card-description">
+                                12 Linux servers with comprehensive security monitoring.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">11 Online</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">🍎</div>
+                            <div class="card-title">macOS Agents</div>
+                            <div class="card-description">
+                                5 macOS workstations with endpoint protection.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #FF9800; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">4 Online</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">☁️</div>
+                            <div class="card-title">Cloud Agents</div>
+                            <div class="card-description">
+                                Cloud-based agents for AWS, Azure, and GCP environments.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">All Online</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Agent Status Table -->
+                    <div class="log-table-container">
+                        <div class="table-header">
+                            <div class="table-title">🤖 Agent Status Overview</div>
+                            <div style="font-size: 0.9em; color: #666;">Real-time agent status and health monitoring</div>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="log-table">
+                                <thead>
+                                    <tr>
+                                        <th>Agent Name</th>
+                                        <th>Platform</th>
+                                        <th>Status</th>
+                                        <th>Last Seen</th>
+                                        <th>Version</th>
+                                        <th>Health</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="agentTableBody">
+                                    <!-- Agent data will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <h3>🚀 Agent Management Actions</h3>
+                        <div class="actions-grid">
+                            <button class="action-btn" onclick="deployAgents()">🚀 Deploy Agents</button>
+                            <button class="action-btn" onclick="updateAgents()">🔄 Update All</button>
+                            <button class="action-btn" onclick="restartAgents()">🔄 Restart Offline</button>
+                            <button class="action-btn" onclick="generateReport()">📄 Health Report</button>
+                            <button class="action-btn" onclick="configureAgents()">⚙️ Configure</button>
+                            <button class="action-btn" onclick="backupAgents()">💾 Backup Config</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Threat Intelligence Section -->
+                <div id="threats" class="section-content">
+                    <div class="page-title">🌐 Threat Intelligence</div>
+
+                    <!-- Threat Stats -->
+                    <div class="metrics-row">
+                        <div class="metric-card">
+                            <div class="metric-value" id="total-threats">1,247</div>
+                            <div class="metric-label">Threats Detected</div>
+                        </div>
+                        <div class="metric-card danger">
+                            <div class="metric-value" id="active-threats">23</div>
+                            <div class="metric-label">Active Threats</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="blocked-attacks">892</div>
+                            <div class="metric-label">Blocked Attacks</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="threat-score">85</div>
+                            <div class="metric-label">Threat Score</div>
+                        </div>
+                    </div>
+
+                    <!-- Threat Categories -->
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <div class="card-icon">🕵️</div>
+                            <div class="card-title">Threat Hunting</div>
+                            <div class="card-description">
+                                Proactive threat hunting and advanced persistent threat detection.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Active</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">🔍</div>
+                            <div class="card-title">Vulnerability Assessment</div>
+                            <div class="card-description">
+                                Automated vulnerability scanning and security assessment tools.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Active</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">🌍</div>
+                            <div class="card-title">Threat Feeds</div>
+                            <div class="card-description">
+                                Real-time threat intelligence feeds and IOCs integration.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Active</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">📊</div>
+                            <div class="card-title">Threat Analytics</div>
+                            <div class="card-description">
+                                Advanced threat analytics and behavioral analysis.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #FF9800; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Warning</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Threat Table -->
+                    <div class="log-table-container">
+                        <div class="table-header">
+                            <div class="table-title">🌐 Recent Threat Intelligence</div>
+                            <div style="font-size: 0.9em; color: #666;">Latest threat intelligence and security events</div>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="log-table">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Threat Type</th>
+                                        <th>Source IP</th>
+                                        <th>Target</th>
+                                        <th>Severity</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="threatTableBody">
+                                    <!-- Threat data will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <h3>🚀 Threat Intelligence Actions</h3>
+                        <div class="actions-grid">
+                            <button class="action-btn" onclick="runThreatHunt()">🔍 Run Threat Hunt</button>
+                            <button class="action-btn" onclick="updateFeeds()">🔄 Update Feeds</button>
+                            <button class="action-btn" onclick="scanVulnerabilities()">🔍 Vulnerability Scan</button>
+                            <button class="action-btn" onclick="exportThreats()">📤 Export Data</button>
+                            <button class="action-btn" onclick="createAlert()">🚨 Create Alert</button>
+                            <button class="action-btn" onclick="updateIOCs()">📋 Update IOCs</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compliance Center Section -->
+                <div id="compliance" class="section-content">
+                    <div class="page-title">📋 Compliance Center</div>
+
+                    <!-- Compliance Stats -->
+                    <div class="metrics-row">
+                        <div class="metric-card">
+                            <div class="metric-value" id="total-compliance">95%</div>
+                            <div class="metric-label">Overall Compliance</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="pci-dss">98%</div>
+                            <div class="metric-label">PCI DSS</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="gdpr">92%</div>
+                            <div class="metric-label">GDPR</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="hipaa">94%</div>
+                            <div class="metric-label">HIPAA</div>
+                        </div>
+                    </div>
+
+                    <!-- Compliance Frameworks -->
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <div class="card-icon">💳</div>
+                            <div class="card-title">PCI DSS</div>
+                            <div class="card-description">
+                                Payment Card Industry Data Security Standard compliance monitoring.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">98% Compliant</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">🇪🇺</div>
+                            <div class="card-title">GDPR</div>
+                            <div class="card-description">
+                                General Data Protection Regulation compliance and data privacy monitoring.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">92% Compliant</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">🏥</div>
+                            <div class="card-title">HIPAA</div>
+                            <div class="card-description">
+                                Health Insurance Portability and Accountability Act compliance.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">94% Compliant</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-icon">🏛️</div>
+                            <div class="card-title">NIST 800-53</div>
+                            <div class="card-description">
+                                National Institute of Standards and Technology security controls.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span style="background: #FF9800; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">89% Compliant</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compliance Table -->
+                    <div class="log-table-container">
+                        <div class="table-header">
+                            <div class="table-title">📋 Compliance Status Overview</div>
+                            <div style="font-size: 0.9em; color: #666;">Real-time compliance monitoring and reporting</div>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="log-table">
+                                <thead>
+                                    <tr>
+                                        <th>Framework</th>
+                                        <th>Status</th>
+                                        <th>Last Audit</th>
+                                        <th>Next Review</th>
+                                        <th>Score</th>
+                                        <th>Issues</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="complianceTableBody">
+                                    <!-- Compliance data will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <h3>🚀 Compliance Actions</h3>
+                        <div class="actions-grid">
+                            <button class="action-btn" onclick="runAudit()">🔍 Run Audit</button>
+                            <button class="action-btn" onclick="generateReport()">📄 Generate Report</button>
+                            <button class="action-btn" onclick="updatePolicies()">📋 Update Policies</button>
+                            <button class="action-btn" onclick="exportCompliance()">📤 Export Data</button>
+                            <button class="action-btn" onclick="scheduleReview()">📅 Schedule Review</button>
+                            <button class="action-btn" onclick="fixIssues()">🔧 Fix Issues</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // TMEN SIEM Unified Dashboard JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 TMEN SIEM Unified Dashboard Initialized');
+            
+            // Initialize charts when analytics section is shown
+            initializeCharts();
+            
+            // Populate tables
+            populateAlertsTable();
+            populateLogTable();
+            populateModuleTable();
+            populateAlertCenterTable();
+            populateAgentTable();
+            populateThreatTable();
+            populateComplianceTable();
+            
+            // Start real-time updates
+            startRealTimeUpdates();
+        });
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update sidebar active state
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Find and activate the corresponding sidebar link
+            const sidebarLink = document.querySelector(`[onclick="showSection('${sectionId}')"]`);
+            if (sidebarLink) {
+                sidebarLink.classList.add('active');
+            }
+            
+            // Initialize charts if analytics section is shown
+            if (sectionId === 'analytics') {
+                setTimeout(() => {
+                    initializeCharts();
+                }, 100);
+            }
+            
+            console.log(`TMEN SIEM: Switched to ${sectionId} section`);
+        }
+
+        function initializeCharts() {
+            // Alert Level Evolution Chart
+            const alertCtx = document.getElementById('alertEvolutionChart');
+            if (alertCtx) {
+                new Chart(alertCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+                        datasets: [{
+                            label: 'Level 12+',
+                            data: [45, 52, 38, 67, 89, 76, 54],
+                            borderColor: '#F44336',
+                            backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'Level 8-11',
+                            data: [120, 135, 98, 156, 189, 167, 145],
+                            borderColor: '#FF9800',
+                            backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Top Agents Chart
+            const agentsCtx = document.getElementById('topAgentsChart');
+            if (agentsCtx) {
+                new Chart(agentsCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Windows-Server-01', 'Linux-Web-01', 'macOS-Client-01', 'Linux-DB-01', 'Windows-Client-05'],
+                        datasets: [{
+                            data: [25, 20, 18, 15, 12],
+                            backgroundColor: ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#F44336']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            // Alerts Evolution Chart
+            const alertsCtx = document.getElementById('alertsEvolutionChart');
+            if (alertsCtx) {
+                new Chart(alertsCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Windows-Server-01', 'Linux-Web-01', 'macOS-Client-01', 'Linux-DB-01', 'Windows-Client-05'],
+                        datasets: [{
+                            label: 'Alerts',
+                            data: [156, 134, 98, 87, 76],
+                            backgroundColor: '#4CAF50'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            // MITRE ATT&CK Chart
+            const mitreCtx = document.getElementById('mitreChart');
+            if (mitreCtx) {
+                new Chart(mitreCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['T1078', 'T1055', 'T1053', 'T1021', 'T1082'],
+                        datasets: [{
+                            label: 'Occurrences',
+                            data: [89, 67, 54, 43, 32],
+                            backgroundColor: '#9C27B0'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y'
+                    }
+                });
+            }
+        }
+
+        function populateAlertsTable() {
+            const alertsData = [
+                {
+                    time: '2024-01-15 14:32:15',
+                    agent: '001',
+                    agentName: 'Windows-Server-01',
+                    technique: 'T1078',
+                    tactic: 'Initial Access',
+                    description: 'Multiple failed login attempts',
+                    level: '12',
+                    ruleId: '100001'
+                },
+                {
+                    time: '2024-01-15 14:31:42',
+                    agent: '002',
+                    agentName: 'Linux-Web-01',
+                    technique: 'T1055',
+                    tactic: 'Defense Evasion',
+                    description: 'Suspicious process injection',
+                    level: '14',
+                    ruleId: '100002'
+                },
+                {
+                    time: '2024-01-15 14:30:28',
+                    agent: '003',
+                    agentName: 'macOS-Client-03',
+                    technique: 'T1053',
+                    tactic: 'Execution',
+                    description: 'Scheduled task creation',
+                    level: '10',
+                    ruleId: '100003'
+                },
+                {
+                    time: '2024-01-15 14:29:15',
+                    agent: '004',
+                    agentName: 'Linux-DB-01',
+                    technique: 'T1021',
+                    tactic: 'Lateral Movement',
+                    description: 'Remote service access',
+                    level: '15',
+                    ruleId: '100004'
+                },
+                {
+                    time: '2024-01-15 14:28:33',
+                    agent: '005',
+                    agentName: 'Windows-Client-05',
+                    technique: 'T1082',
+                    tactic: 'Discovery',
+                    description: 'System information discovery',
+                    level: '8',
+                    ruleId: '100005'
+                }
+            ];
+
+            const tableBody = document.getElementById('alertsTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = '';
+                alertsData.forEach(alert => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${alert.time}</td>
+                        <td>${alert.agent}</td>
+                        <td>${alert.agentName}</td>
+                        <td>${alert.technique}</td>
+                        <td>${alert.tactic}</td>
+                        <td>${alert.description}</td>
+                        <td>${alert.level}</td>
+                        <td>${alert.ruleId}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        function populateLogTable() {
+            const logsData = [
+                {
+                    timestamp: '2024-01-15 14:32:15.123',
+                    level: 'info',
+                    agent: 'Windows-Server-01',
+                    source: 'Authentication',
+                    message: 'User login successful: admin@tmen.com'
+                },
+                {
+                    timestamp: '2024-01-15 14:31:42.456',
+                    level: 'warning',
+                    agent: 'Linux-Web-01',
+                    source: 'File System',
+                    message: 'Suspicious file access detected: /etc/passwd'
+                },
+                {
+                    timestamp: '2024-01-15 14:30:28.789',
+                    level: 'error',
+                    agent: 'macOS-Client-03',
+                    source: 'Network',
+                    message: 'Failed connection attempt from 192.168.1.100'
+                },
+                {
+                    timestamp: '2024-01-15 14:29:15.012',
+                    level: 'critical',
+                    agent: 'Windows-Server-02',
+                    source: 'Security',
+                    message: 'Multiple failed login attempts detected'
+                },
+                {
+                    timestamp: '2024-01-15 14:28:33.345',
+                    level: 'info',
+                    agent: 'Linux-DB-01',
+                    source: 'Database',
+                    message: 'Database backup completed successfully'
+                },
+                {
+                    timestamp: '2024-01-15 14:27:18.678',
+                    level: 'warning',
+                    agent: 'Windows-Client-05',
+                    source: 'Application',
+                    message: 'High memory usage detected: 85%'
+                },
+                {
+                    timestamp: '2024-01-15 14:26:45.901',
+                    level: 'error',
+                    agent: 'Linux-Mail-01',
+                    source: 'Email',
+                    message: 'SMTP authentication failed for user: test@tmen.com'
+                },
+                {
+                    timestamp: '2024-01-15 14:25:12.234',
+                    level: 'info',
+                    agent: 'macOS-Client-01',
+                    source: 'System',
+                    message: 'System update completed: macOS 14.2.1'
+                },
+                {
+                    timestamp: '2024-01-15 14:24:38.567',
+                    level: 'critical',
+                    agent: 'Windows-Server-03',
+                    source: 'Firewall',
+                    message: 'Port scan detected from 10.0.0.50'
+                },
+                {
+                    timestamp: '2024-01-15 14:23:25.890',
+                    level: 'warning',
+                    agent: 'Linux-Web-02',
+                    source: 'Web Server',
+                    message: 'SSL certificate expires in 30 days'
+                }
+            ];
+
+            const tableBody = document.getElementById('logTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = '';
+                logsData.forEach(log => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${log.timestamp}</td>
+                        <td><span class="log-level ${log.level}">${log.level.toUpperCase()}</span></td>
+                        <td>${log.agent}</td>
+                        <td>${log.source}</td>
+                        <td>${log.message}</td>
+                        <td>
+                            <button class="btn secondary" style="padding: 4px 8px; font-size: 12px;">View</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        function populateModuleTable() {
+            const modulesData = [
+                {
+                    name: 'AWS Security Hub',
+                    status: 'Active',
+                    lastSync: '2024-01-15 14:30:15',
+                    eventsToday: '1,234',
+                    healthScore: '98%'
+                },
+                {
+                    name: 'Office 365 Security',
+                    status: 'Active',
+                    lastSync: '2024-01-15 14:28:42',
+                    eventsToday: '856',
+                    healthScore: '95%'
+                },
+                {
+                    name: 'Google Cloud Platform',
+                    status: 'Active',
+                    lastSync: '2024-01-15 14:25:18',
+                    eventsToday: '567',
+                    healthScore: '92%'
+                },
+                {
+                    name: 'GitHub Security',
+                    status: 'Warning',
+                    lastSync: '2024-01-15 14:20:33',
+                    eventsToday: '234',
+                    healthScore: '78%'
+                },
+                {
+                    name: 'Active Directory',
+                    status: 'Active',
+                    lastSync: '2024-01-15 14:18:55',
+                    eventsToday: '1,567',
+                    healthScore: '96%'
+                }
+            ];
+
+            const tableBody = document.getElementById('moduleTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = '';
+                modulesData.forEach(module => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${module.name}</td>
+                        <td><span class="log-level ${module.status.toLowerCase()}">${module.status}</span></td>
+                        <td>${module.lastSync}</td>
+                        <td>${module.eventsToday}</td>
+                        <td>${module.healthScore}</td>
+                        <td>
+                            <button class="btn secondary" style="padding: 4px 8px; font-size: 12px;">Configure</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        function populateAlertCenterTable() {
+            const alertsData = [
+                {
+                    time: '2024-01-15 14:32:15',
+                    level: 'critical',
+                    source: 'Firewall',
+                    description: 'Multiple failed login attempts from suspicious IP',
+                    status: 'New',
+                    assignee: 'Security Team'
+                },
+                {
+                    time: '2024-01-15 14:30:42',
+                    level: 'high',
+                    source: 'IDS/IPS',
+                    description: 'Port scan detected from external network',
+                    status: 'In Progress',
+                    assignee: 'Network Team'
+                },
+                {
+                    time: '2024-01-15 14:28:18',
+                    level: 'medium',
+                    source: 'Endpoint',
+                    description: 'Suspicious file execution detected',
+                    status: 'Resolved',
+                    assignee: 'SOC Analyst'
+                },
+                {
+                    time: '2024-01-15 14:25:33',
+                    level: 'low',
+                    source: 'Network',
+                    description: 'Unusual network traffic pattern',
+                    status: 'New',
+                    assignee: 'Unassigned'
+                },
+                {
+                    time: '2024-01-15 14:22:55',
+                    level: 'critical',
+                    source: 'Firewall',
+                    description: 'DDoS attack attempt blocked',
+                    status: 'Escalated',
+                    assignee: 'Security Team'
+                }
+            ];
+
+            const tableBody = document.getElementById('alertCenterTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = '';
+                alertsData.forEach(alert => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${alert.time}</td>
+                        <td><span class="log-level ${alert.level}">${alert.level.toUpperCase()}</span></td>
+                        <td>${alert.source}</td>
+                        <td>${alert.description}</td>
+                        <td>${alert.status}</td>
+                        <td>${alert.assignee}</td>
+                        <td>
+                            <button class="btn secondary" style="padding: 4px 8px; font-size: 12px;">View</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        function populateAgentTable() {
+            const agentsData = [
+                {
+                    name: 'Windows-Server-01',
+                    platform: 'Windows Server 2019',
+                    status: 'Online',
+                    lastSeen: '2024-01-15 14:32:15',
+                    version: 'v2.1.4',
+                    health: '98%'
+                },
+                {
+                    name: 'Linux-Web-01',
+                    platform: 'Ubuntu 20.04',
+                    status: 'Online',
+                    lastSeen: '2024-01-15 14:31:42',
+                    version: 'v2.1.4',
+                    health: '95%'
+                },
+                {
+                    name: 'macOS-Client-01',
+                    platform: 'macOS 14.2',
+                    status: 'Offline',
+                    lastSeen: '2024-01-15 14:25:18',
+                    version: 'v2.1.3',
+                    health: '0%'
+                },
+                {
+                    name: 'Linux-DB-01',
+                    platform: 'CentOS 8',
+                    status: 'Online',
+                    lastSeen: '2024-01-15 14:30:33',
+                    version: 'v2.1.4',
+                    health: '92%'
+                },
+                {
+                    name: 'Windows-Client-05',
+                    platform: 'Windows 11',
+                    status: 'Online',
+                    lastSeen: '2024-01-15 14:29:55',
+                    version: 'v2.1.4',
+                    health: '89%'
+                }
+            ];
+
+            const tableBody = document.getElementById('agentTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = '';
+                agentsData.forEach(agent => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${agent.name}</td>
+                        <td>${agent.platform}</td>
+                        <td><span class="log-level ${agent.status.toLowerCase()}">${agent.status}</span></td>
+                        <td>${agent.lastSeen}</td>
+                        <td>${agent.version}</td>
+                        <td>${agent.health}</td>
+                        <td>
+                            <button class="btn secondary" style="padding: 4px 8px; font-size: 12px;">Manage</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        function populateThreatTable() {
+            const threatsData = [
+                {
+                    time: '2024-01-15 14:32:15',
+                    threatType: 'Brute Force',
+                    sourceIP: '192.168.1.100',
+                    target: 'Web Server',
+                    severity: 'High',
+                    status: 'Blocked'
+                },
+                {
+                    time: '2024-01-15 14:30:42',
+                    threatType: 'Port Scan',
+                    sourceIP: '10.0.0.50',
+                    target: 'Database Server',
+                    severity: 'Medium',
+                    status: 'Detected'
+                },
+                {
+                    time: '2024-01-15 14:28:18',
+                    threatType: 'Malware',
+                    sourceIP: '172.16.0.25',
+                    target: 'Endpoint',
+                    severity: 'Critical',
+                    status: 'Quarantined'
+                },
+                {
+                    time: '2024-01-15 14:25:33',
+                    threatType: 'DDoS',
+                    sourceIP: 'Multiple',
+                    target: 'Network',
+                    severity: 'High',
+                    status: 'Mitigated'
+                },
+                {
+                    time: '2024-01-15 14:22:55',
+                    threatType: 'Phishing',
+                    sourceIP: 'External',
+                    target: 'Users',
+                    severity: 'Medium',
+                    status: 'Blocked'
+                }
+            ];
+
+            const tableBody = document.getElementById('threatTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = '';
+                threatsData.forEach(threat => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${threat.time}</td>
+                        <td>${threat.threatType}</td>
+                        <td>${threat.sourceIP}</td>
+                        <td>${threat.target}</td>
+                        <td><span class="log-level ${threat.severity.toLowerCase()}">${threat.severity}</span></td>
+                        <td>${threat.status}</td>
+                        <td>
+                            <button class="btn secondary" style="padding: 4px 8px; font-size: 12px;">Investigate</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        function populateComplianceTable() {
+            const complianceData = [
+                {
+                    framework: 'PCI DSS',
+                    status: 'Compliant',
+                    lastAudit: '2024-01-10',
+                    nextReview: '2024-04-10',
+                    score: '98%',
+                    issues: '2 Minor'
+                },
+                {
+                    framework: 'GDPR',
+                    status: 'Compliant',
+                    lastAudit: '2024-01-05',
+                    nextReview: '2024-03-05',
+                    score: '92%',
+                    issues: '5 Minor'
+                },
+                {
+                    framework: 'HIPAA',
+                    status: 'Compliant',
+                    lastAudit: '2024-01-08',
+                    nextReview: '2024-04-08',
+                    score: '94%',
+                    issues: '3 Minor'
+                },
+                {
+                    framework: 'NIST 800-53',
+                    status: 'Warning',
+                    lastAudit: '2024-01-12',
+                    nextReview: '2024-02-12',
+                    score: '89%',
+                    issues: '8 Issues'
+                },
+                {
+                    framework: 'ISO 27001',
+                    status: 'Compliant',
+                    lastAudit: '2024-01-15',
+                    nextReview: '2024-04-15',
+                    score: '96%',
+                    issues: '1 Minor'
+                }
+            ];
+
+            const tableBody = document.getElementById('complianceTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = '';
+                complianceData.forEach(compliance => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${compliance.framework}</td>
+                        <td><span class="log-level ${compliance.status.toLowerCase()}">${compliance.status}</span></td>
+                        <td>${compliance.lastAudit}</td>
+                        <td>${compliance.nextReview}</td>
+                        <td>${compliance.score}</td>
+                        <td>${compliance.issues}</td>
+                        <td>
+                            <button class="btn secondary" style="padding: 4px 8px; font-size: 12px;">Review</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        function startRealTimeUpdates() {
+            // Update metrics every 5 seconds
+            setInterval(() => {
+                updateMetrics();
+            }, 5000);
+        }
+
+        function updateMetrics() {
+            // Simulate real-time metric updates
+            const totalAgents = document.getElementById('total-agents');
+            const activeAgents = document.getElementById('active-agents');
+            const criticalAlerts = document.getElementById('critical-alerts');
+            
+            if (totalAgents && activeAgents && criticalAlerts) {
+                // Add small random variations
+                if (Math.random() > 0.7) { // 30% chance to update
+                    const variation = Math.floor(Math.random() * 3) - 1;
+                    
+                    const currentActive = parseInt(activeAgents.textContent);
+                    const newActive = Math.max(30, Math.min(35, currentActive + variation));
+                    activeAgents.textContent = newActive;
+                    
+                    const currentCritical = parseInt(criticalAlerts.textContent);
+                    const newCritical = Math.max(10, Math.min(20, currentCritical + variation));
+                    criticalAlerts.textContent = newCritical;
+                }
+            }
+        }
+
+        // Quick action functions
+        function generateReport() {
+            console.log('TMEN SIEM: Generating security report...');
+            alert('📄 Security report generation initiated');
+        }
+
+        function scanSystem() {
+            console.log('TMEN SIEM: Starting system scan...');
+            alert('🔍 System security scan started');
+        }
+
+        function updateAgents() {
+            console.log('TMEN SIEM: Updating agents...');
+            alert('🔄 Agent update process initiated');
+        }
+
+        function backupData() {
+            console.log('TMEN SIEM: Creating data backup...');
+            alert('💾 Data backup process started');
+        }
+
+        function exportLogs() {
+            console.log('TMEN SIEM: Exporting logs...');
+            alert('📤 Log export process initiated');
+        }
+
+        function emergencyMode() {
+            console.log('TMEN SIEM: Activating emergency mode...');
+            alert('🚨 Emergency mode activated - Enhanced security monitoring enabled');
+        }
+
+        // Alert Center Actions
+        function acknowledgeAlerts() {
+            console.log('TMEN SIEM: Acknowledging all alerts...');
+            alert('✅ All alerts have been acknowledged');
+        }
+
+        function escalateAlerts() {
+            console.log('TMEN SIEM: Escalating critical alerts...');
+            alert('📤 Critical alerts have been escalated to management');
+        }
+
+        function createIncident() {
+            console.log('TMEN SIEM: Creating incident...');
+            alert('📋 New incident has been created');
+        }
+
+        function exportAlerts() {
+            console.log('TMEN SIEM: Exporting alerts...');
+            alert('📤 Alert data has been exported');
+        }
+
+        function runInvestigation() {
+            console.log('TMEN SIEM: Running investigation...');
+            alert('🔍 Investigation process has been initiated');
+        }
+
+        function updateRules() {
+            console.log('TMEN SIEM: Updating rules...');
+            alert('⚙️ Security rules have been updated');
+        }
+
+        // Agent Management Actions
+        function deployAgents() {
+            console.log('TMEN SIEM: Deploying agents...');
+            alert('🚀 Agent deployment process initiated');
+        }
+
+        function restartAgents() {
+            console.log('TMEN SIEM: Restarting offline agents...');
+            alert('🔄 Offline agents are being restarted');
+        }
+
+        function configureAgents() {
+            console.log('TMEN SIEM: Opening agent configuration...');
+            alert('⚙️ Agent configuration panel opened');
+        }
+
+        function backupAgents() {
+            console.log('TMEN SIEM: Backing up agent configuration...');
+            alert('💾 Agent configuration backup completed');
+        }
+
+        // Threat Intelligence Actions
+        function runThreatHunt() {
+            console.log('TMEN SIEM: Running threat hunt...');
+            alert('🔍 Threat hunting process initiated');
+        }
+
+        function updateFeeds() {
+            console.log('TMEN SIEM: Updating threat feeds...');
+            alert('🔄 Threat intelligence feeds updated');
+        }
+
+        function scanVulnerabilities() {
+            console.log('TMEN SIEM: Starting vulnerability scan...');
+            alert('🔍 Vulnerability scan initiated');
+        }
+
+        function exportThreats() {
+            console.log('TMEN SIEM: Exporting threat data...');
+            alert('📤 Threat intelligence data exported');
+        }
+
+        function createAlert() {
+            console.log('TMEN SIEM: Creating threat alert...');
+            alert('🚨 New threat alert created');
+        }
+
+        function updateIOCs() {
+            console.log('TMEN SIEM: Updating IOCs...');
+            alert('📋 Indicators of Compromise updated');
+        }
+
+        // Compliance Actions
+        function runAudit() {
+            console.log('TMEN SIEM: Running compliance audit...');
+            alert('🔍 Compliance audit process initiated');
+        }
+
+        function updatePolicies() {
+            console.log('TMEN SIEM: Updating compliance policies...');
+            alert('📋 Compliance policies updated');
+        }
+
+        function exportCompliance() {
+            console.log('TMEN SIEM: Exporting compliance data...');
+            alert('📤 Compliance data exported');
+        }
+
+        function scheduleReview() {
+            console.log('TMEN SIEM: Scheduling compliance review...');
+            alert('📅 Compliance review scheduled');
+        }
+
+        function fixIssues() {
+            console.log('TMEN SIEM: Fixing compliance issues...');
+            alert('🔧 Compliance issues are being addressed');
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'r' || e.key === 'R') {
+                updateMetrics();
+                console.log('TMEN SIEM: Metrics refreshed');
+            }
+        });
+
+        // Add hover effects for dashboard cards
+        document.querySelectorAll('.dashboard-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+                this.style.boxShadow = '0 6px 20px rgba(0,0,0,0.15)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+                this.style.boxShadow = '';
+            });
+        });
+    </script>
+</body>
+</html> 

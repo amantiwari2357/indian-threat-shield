@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMEN SIEM - Main Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* TMEN Header */
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-graphic {
+            position: relative;
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-circle {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #2d5a2d 0%, #1a3d1a 100%);
+            top: 6px;
+            left: 6px;
+        }
+
+        .logo-swirl {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .logo-swirl::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 0deg, #4CAF50 60deg, #66BB6A 120deg, #81C784 180deg, #A5D6A7 240deg, #C8E6C9 300deg, transparent 360deg);
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .logo-text {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 1.3em;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 1px;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            background: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-item {
+            color: #666;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .nav-item.active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #45a049;
+            transform: translateY(-1px);
+        }
+
+        .btn.secondary {
+            background: #6c757d;
+        }
+
+        .btn.secondary:hover {
+            background: #5a6268;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .sidebar-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 15px;
+            color: #666;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .sidebar-menu a:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .sidebar-menu a.active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        /* Content Area */
+        .content-area {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .page-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            border-left: 4px solid #4CAF50;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .card-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .card-description {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Metrics Row */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .metric-card.danger {
+            border-left-color: #F44336;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .metric-card.danger .metric-value {
+            color: #F44336;
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .quick-actions h3 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.3em;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: white;
+            border: 2px solid #4CAF50;
+            color: #4CAF50;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            background: #4CAF50;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+            
+            .content-area {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .metrics-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-bar {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- TMEN Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-graphic">
+                    <div class="logo-circle"></div>
+                    <div class="logo-swirl"></div>
+                </div>
+                <div class="logo-text">TMEN SIEM</div>
+            </div>
+            <div style="color: white; text-align: right;">
+                <div style="font-size: 0.9em; opacity: 0.8;">Security Information & Event Management</div>
+            </div>
+        </div>
+
+        <!-- Navigation Bar -->
+        <div class="nav-bar">
+            <div class="nav-left">
+                <span class="nav-item">tmen.</span>
+                <span class="nav-item active">Dashboard</span>
+                <span class="nav-item">Security events</span>
+            </div>
+            <div class="nav-right">
+                <button class="btn secondary">API</button>
+                <select style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option>default</option>
+                </select>
+                <button class="btn secondary">Explore agent</button>
+                <button class="btn">Generate report</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-title">TMEN SIEM Modules</div>
+                <ul class="sidebar-menu">
+                    <li><a href="tmen_siem_main.html" class="active">🏠 Main Dashboard</a></li>
+                    <li><a href="tmen_siem_advanced.html">📊 Advanced Analytics</a></li>
+                    <li><a href="tmen_siem_complete.html">🔧 Security Modules</a></li>
+                    <li><a href="tmen_siem_logs.html">📝 Log Management</a></li>
+                    <li><a href="tmen_siem_alerts.html">🚨 Alert Center</a></li>
+                    <li><a href="tmen_siem_agents.html">🤖 Agent Management</a></li>
+                    <li><a href="tmen_siem_threats.html">🌐 Threat Intelligence</a></li>
+                    <li><a href="tmen_siem_compliance.html">📋 Compliance Center</a></li>
+                </ul>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div class="page-title">TMEN SIEM - Main Dashboard</div>
+
+                <!-- Metrics Row -->
+                <div class="metrics-row">
+                    <div class="metric-card">
+                        <div class="metric-value" id="total-agents">42</div>
+                        <div class="metric-label">Total Agents</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="active-agents">32</div>
+                        <div class="metric-label">Active Agents</div>
+                    </div>
+                    <div class="metric-card danger">
+                        <div class="metric-value" id="critical-alerts">15</div>
+                        <div class="metric-label">Critical Alerts</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="system-status">100%</div>
+                        <div class="metric-label">System Status</div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <div class="dashboard-card" onclick="navigateTo('tmen_siem_advanced.html')">
+                        <div class="card-icon">📊</div>
+                        <div class="card-title">Advanced Analytics</div>
+                        <div class="card-description">
+                            Real-time charts, metrics, and detailed security analytics with MITRE ATT&CK mapping.
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="navigateTo('tmen_siem_complete.html')">
+                        <div class="card-icon">🔧</div>
+                        <div class="card-title">Security Modules</div>
+                        <div class="card-description">
+                            Complete SIEM modules including AWS, Office 365, GCP, GitHub integrations.
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="navigateTo('tmen_siem_logs.html')">
+                        <div class="card-icon">📝</div>
+                        <div class="card-title">Log Management</div>
+                        <div class="card-description">
+                            Comprehensive log collection, analysis, and real-time log monitoring.
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="navigateTo('tmen_siem_alerts.html')">
+                        <div class="card-icon">🚨</div>
+                        <div class="card-title">Alert Center</div>
+                        <div class="card-description">
+                            Security alert management, threat detection, and incident response.
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="navigateTo('tmen_siem_agents.html')">
+                        <div class="card-icon">🤖</div>
+                        <div class="card-title">Agent Management</div>
+                        <div class="card-description">
+                            Multi-platform agent monitoring, health checks, and deployment management.
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="navigateTo('tmen_siem_threats.html')">
+                        <div class="card-icon">🌐</div>
+                        <div class="card-title">Threat Intelligence</div>
+                        <div class="card-description">
+                            Network threat analysis, vulnerability assessment, and threat hunting.
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="navigateTo('tmen_siem_compliance.html')">
+                        <div class="card-icon">📋</div>
+                        <div class="card-title">Compliance Center</div>
+                        <div class="card-description">
+                            PCI DSS, GDPR, HIPAA, NIST compliance monitoring and reporting.
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-icon">⚙️</div>
+                        <div class="card-title">System Settings</div>
+                        <div class="card-description">
+                            Configuration management, user administration, and system preferences.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h3>🚀 Quick Actions</h3>
+                    <div class="actions-grid">
+                        <button class="action-btn" onclick="generateReport()">📄 Generate Report</button>
+                        <button class="action-btn" onclick="scanSystem()">🔍 System Scan</button>
+                        <button class="action-btn" onclick="updateAgents()">🔄 Update Agents</button>
+                        <button class="action-btn" onclick="backupData()">💾 Backup Data</button>
+                        <button class="action-btn" onclick="exportLogs()">📤 Export Logs</button>
+                        <button class="action-btn" onclick="emergencyMode()">🚨 Emergency Mode</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // TMEN SIEM Main Dashboard JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 TMEN SIEM Main Dashboard Initialized');
+            
+            // Start real-time updates
+            startRealTimeUpdates();
+            
+            // Add navigation handlers
+            addNavigationHandlers();
+        });
+
+        function navigateTo(page) {
+            console.log(`TMEN SIEM: Navigating to ${page}`);
+            window.location.href = page;
+        }
+
+        function startRealTimeUpdates() {
+            // Update metrics every 5 seconds
+            setInterval(() => {
+                updateMetrics();
+            }, 5000);
+        }
+
+        function updateMetrics() {
+            // Simulate real-time metric updates
+            const totalAgents = document.getElementById('total-agents');
+            const activeAgents = document.getElementById('active-agents');
+            const criticalAlerts = document.getElementById('critical-alerts');
+            
+            // Add small random variations
+            if (Math.random() > 0.7) { // 30% chance to update
+                const variation = Math.floor(Math.random() * 3) - 1;
+                
+                const currentActive = parseInt(activeAgents.textContent);
+                const newActive = Math.max(30, Math.min(35, currentActive + variation));
+                activeAgents.textContent = newActive;
+                
+                const currentCritical = parseInt(criticalAlerts.textContent);
+                const newCritical = Math.max(10, Math.min(20, currentCritical + variation));
+                criticalAlerts.textContent = newCritical;
+            }
+        }
+
+        function addNavigationHandlers() {
+            // Add click handlers for sidebar navigation
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    document.querySelectorAll('.sidebar-menu a').forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    console.log(`TMEN SIEM: Navigated to ${this.textContent}`);
+                });
+            });
+        }
+
+        // Quick action functions
+        function generateReport() {
+            console.log('TMEN SIEM: Generating security report...');
+            alert('📄 Security report generation initiated');
+        }
+
+        function scanSystem() {
+            console.log('TMEN SIEM: Starting system scan...');
+            alert('🔍 System security scan started');
+        }
+
+        function updateAgents() {
+            console.log('TMEN SIEM: Updating agents...');
+            alert('🔄 Agent update process initiated');
+        }
+
+        function backupData() {
+            console.log('TMEN SIEM: Creating data backup...');
+            alert('💾 Data backup process started');
+        }
+
+        function exportLogs() {
+            console.log('TMEN SIEM: Exporting logs...');
+            alert('📤 Log export process initiated');
+        }
+
+        function emergencyMode() {
+            console.log('TMEN SIEM: Activating emergency mode...');
+            alert('🚨 Emergency mode activated - Enhanced security monitoring enabled');
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'r' || e.key === 'R') {
+                updateMetrics();
+                console.log('TMEN SIEM: Metrics refreshed');
+            }
+        });
+
+        // Add hover effects for dashboard cards
+        document.querySelectorAll('.dashboard-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+                this.style.boxShadow = '0 6px 20px rgba(0,0,0,0.15)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+                this.style.boxShadow = '';
+            });
+        });
+    </script>
+</body>
+</html> 
