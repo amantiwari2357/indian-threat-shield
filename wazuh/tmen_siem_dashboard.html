@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMEN SIEM - Security Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* TMEN Header */
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-graphic {
+            position: relative;
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-circle {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #2d5a2d 0%, #1a3d1a 100%);
+            top: 6px;
+            left: 6px;
+        }
+
+        .logo-swirl {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .logo-swirl::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 0deg, #4CAF50 60deg, #66BB6A 120deg, #81C784 180deg, #A5D6A7 240deg, #C8E6C9 300deg, transparent 360deg);
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .logo-text {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 1.3em;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 1px;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            background: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .nav-tab.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Dashboard Overview */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        /* Tables */
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .table-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Status Indicators */
+        .status-online {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-offline {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .status-warning {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        /* Alert Levels */
+        .alert-critical {
+            background: #dc3545;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .alert-high {
+            background: #fd7e14;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .alert-medium {
+            background: #ffc107;
+            color: #212529;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .alert-low {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .metrics-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- TMEN Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-graphic">
+                    <div class="logo-circle"></div>
+                    <div class="logo-swirl"></div>
+                </div>
+                <div class="logo-text">TMEN CONSOLE</div>
+            </div>
+            <div style="color: #ffffff; font-size: 0.9em;">
+                Security Information & Event Management
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-bar">
+            <div class="nav-tabs">
+                <div class="nav-tab active" onclick="showSection('dashboard')">Dashboard</div>
+                <div class="nav-tab" onclick="showSection('alerts')">Alerts</div>
+                <div class="nav-tab" onclick="showSection('logs')">Logs</div>
+                <div class="nav-tab" onclick="showSection('agents')">Agents</div>
+                <div class="nav-tab" onclick="showSection('threats')">Threats</div>
+                <div class="nav-tab" onclick="showSection('compliance')">Compliance</div>
+                <div class="nav-tab" onclick="showSection('modules')">Modules</div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="content-section active">
+            <h2>TMEN SIEM Dashboard</h2>
+            
+            <!-- Metrics Row -->
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-value" id="total-alerts">1,247</div>
+                    <div class="metric-label">Total Alerts</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="level-12-alerts">89</div>
+                    <div class="metric-label">Level 12+ Alerts</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="auth-failures">156</div>
+                    <div class="metric-label">Auth Failures</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="auth-success">2,891</div>
+                    <div class="metric-label">Auth Success</div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Alert Level Evolution</div>
+                    <canvas id="alertChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Top 5 Agents</div>
+                    <canvas id="agentChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Alerts Evolution</div>
+                    <canvas id="evolutionChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Top MITRE ATT&CKs</div>
+                    <canvas id="mitreChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Alerts Table -->
+            <div class="table-container">
+                <div class="table-title">Recent Security Alerts</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Level</th>
+                            <th>Agent</th>
+                            <th>Rule</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alerts-table">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Other sections will be added here -->
+        <div id="alerts" class="content-section">
+            <h2>Alert Management</h2>
+            <p>Alert management section content...</p>
+        </div>
+
+        <div id="logs" class="content-section">
+            <h2>Log Management</h2>
+            <p>Log management section content...</p>
+        </div>
+
+        <div id="agents" class="content-section">
+            <h2>Agent Management</h2>
+            <p>Agent management section content...</p>
+        </div>
+
+        <div id="threats" class="content-section">
+            <h2>Threat Intelligence</h2>
+            <p>Threat intelligence section content...</p>
+        </div>
+
+        <div id="compliance" class="content-section">
+            <h2>Compliance Center</h2>
+            <p>Compliance center section content...</p>
+        </div>
+
+        <div id="modules" class="content-section">
+            <h2>Security Modules</h2>
+            <p>Security modules section content...</p>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE = 'http://localhost:5000/api';
+        let realTimeData = {};
+
+        // Real-time data fetching functions
+        async function fetchSystemMetrics() {
+            try {
+                const response = await fetch(`${API_BASE}/system/metrics`);
+                const data = await response.json();
+                realTimeData.systemMetrics = data;
+                updateSystemMetrics();
+            } catch (error) {
+                console.error('Error fetching system metrics:', error);
+            }
+        }
+
+        async function fetchAlerts() {
+            try {
+                const response = await fetch(`${API_BASE}/alerts`);
+                const data = await response.json();
+                realTimeData.alerts = data;
+                updateAlertsDisplay();
+            } catch (error) {
+                console.error('Error fetching alerts:', error);
+            }
+        }
+
+        async function fetchLogs() {
+            try {
+                const response = await fetch(`${API_BASE}/logs`);
+                const data = await response.json();
+                realTimeData.logs = data;
+                updateLogsDisplay();
+            } catch (error) {
+                console.error('Error fetching logs:', error);
+            }
+        }
+
+        async function fetchAgents() {
+            try {
+                const response = await fetch(`${API_BASE}/agents`);
+                const data = await response.json();
+                realTimeData.agents = data;
+                updateAgentsDisplay();
+            } catch (error) {
+                console.error('Error fetching agents:', error);
+            }
+        }
+
+        async function fetchThreats() {
+            try {
+                const response = await fetch(`${API_BASE}/network/threats`);
+                const data = await response.json();
+                realTimeData.threats = data;
+                updateThreatsDisplay();
+            } catch (error) {
+                console.error('Error fetching threats:', error);
+            }
+        }
+
+        async function fetchDashboardOverview() {
+            try {
+                const response = await fetch(`${API_BASE}/dashboard/overview`);
+                const data = await response.json();
+                realTimeData.overview = data;
+                updateDashboardOverview();
+            } catch (error) {
+                console.error('Error fetching dashboard overview:', error);
+            }
+        }
+
+        // Update functions
+        function updateSystemMetrics() {
+            if (realTimeData.systemMetrics) {
+                // Update system metrics display
+                console.log('System metrics updated:', realTimeData.systemMetrics);
+            }
+        }
+
+        function updateAlertsDisplay() {
+            if (realTimeData.alerts) {
+                // Update alerts table
+                const tableBody = document.getElementById('alerts-table');
+                if (tableBody && realTimeData.alerts.length > 0) {
+                    tableBody.innerHTML = realTimeData.alerts.slice(0, 10).map(alert => `
+                        <tr>
+                            <td>${alert.timestamp}</td>
+                            <td><span class="alert-${alert.level.toLowerCase()}">${alert.level}</span></td>
+                            <td>${alert.agent || 'N/A'}</td>
+                            <td>${alert.rule}</td>
+                            <td>${alert.description}</td>
+                            <td>${alert.status}</td>
+                        </tr>
+                    `).join('');
+                }
+            }
+        }
+
+        function updateLogsDisplay() {
+            if (realTimeData.logs) {
+                console.log('Logs updated:', realTimeData.logs);
+            }
+        }
+
+        function updateAgentsDisplay() {
+            if (realTimeData.agents) {
+                console.log('Agents updated:', realTimeData.agents);
+            }
+        }
+
+        function updateThreatsDisplay() {
+            if (realTimeData.threats) {
+                console.log('Threats updated:', realTimeData.threats);
+            }
+        }
+
+        function updateDashboardOverview() {
+            if (realTimeData.overview) {
+                console.log('Dashboard overview updated:', realTimeData.overview);
+            }
+        }
+
+        // Refresh all data
+        function refreshAllData() {
+            fetchSystemMetrics();
+            fetchAlerts();
+            fetchLogs();
+            fetchAgents();
+            fetchThreats();
+            fetchDashboardOverview();
+        }
+
+        // Start real-time updates
+        function startRealTimeUpdates() {
+            refreshAllData();
+            setInterval(refreshAllData, 5000); // Update every 5 seconds
+        }
+
+        // Stop real-time updates
+        function stopRealTimeUpdates() {
+            // Implementation for stopping updates
+        }
+
+        // Navigation function
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update navigation tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            // Alert Level Chart
+            const alertCtx = document.getElementById('alertChart').getContext('2d');
+            new Chart(alertCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Critical', 'High', 'Medium', 'Low'],
+                    datasets: [{
+                        data: [15, 25, 35, 25],
+                        backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#28a745']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Agent Chart
+            const agentCtx = document.getElementById('agentChart').getContext('2d');
+            new Chart(agentCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Server-01', 'Server-02', 'Workstation-01', 'Workstation-02', 'Router-01'],
+                    datasets: [{
+                        label: 'Alerts',
+                        data: [45, 38, 32, 28, 22],
+                        backgroundColor: '#007bff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Evolution Chart
+            const evolutionCtx = document.getElementById('evolutionChart').getContext('2d');
+            new Chart(evolutionCtx, {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    datasets: [{
+                        label: 'Alerts',
+                        data: [12, 8, 15, 23, 18, 14],
+                        borderColor: '#28a745',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // MITRE Chart
+            const mitreCtx = document.getElementById('mitreChart').getContext('2d');
+            new Chart(mitreCtx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: ['T1078', 'T1055', 'T1027', 'T1082', 'T1059'],
+                    datasets: [{
+                        label: 'Occurrences',
+                        data: [23, 18, 15, 12, 9],
+                        backgroundColor: '#6f42c1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            startRealTimeUpdates();
+            
+            // Populate sample data
+            populateAlertsTable();
+        });
+
+        // Populate alerts table with sample data
+        function populateAlertsTable() {
+            const tableBody = document.getElementById('alerts-table');
+            const sampleAlerts = [
+                { time: '2024-01-15 14:32:15', level: 'Critical', agent: 'Server-01', rule: 'Failed login attempt', description: 'Multiple failed login attempts detected', status: 'Active' },
+                { time: '2024-01-15 14:28:42', level: 'High', agent: 'Workstation-03', rule: 'Suspicious file access', description: 'Unauthorized access to system files', status: 'Active' },
+                { time: '2024-01-15 14:25:18', level: 'Medium', agent: 'Router-01', rule: 'Network scan detected', description: 'Port scanning activity detected', status: 'Resolved' },
+                { time: '2024-01-15 14:22:05', level: 'Low', agent: 'Server-02', rule: 'Service restart', description: 'Web service restarted automatically', status: 'Resolved' },
+                { time: '2024-01-15 14:19:33', level: 'Critical', agent: 'Workstation-01', rule: 'Malware detection', description: 'Suspicious executable file detected', status: 'Active' }
+            ];
+
+            tableBody.innerHTML = sampleAlerts.map(alert => `
+                <tr>
+                    <td>${alert.time}</td>
+                    <td><span class="alert-${alert.level.toLowerCase()}">${alert.level}</span></td>
+                    <td>${alert.agent}</td>
+                    <td>${alert.rule}</td>
+                    <td>${alert.description}</td>
+                    <td>${alert.status}</td>
+                </tr>
+            `).join('');
+        }
+    </script>
+</body>
+</html> 

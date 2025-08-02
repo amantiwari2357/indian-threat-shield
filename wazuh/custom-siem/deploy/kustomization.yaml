@@ -1,0 +1,119 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: custom-siem
+
+resources:
+  # Core infrastructure
+  - namespace.yaml
+  - elasticsearch/
+  - kafka/
+  - postgresql/
+  - redis/
+  
+  # Application components
+  - backend-api/
+  - dashboard/
+  - rule-engine/
+  - log-collector/
+  
+  # Monitoring and observability
+  - monitoring/
+  
+  # Ingress and networking
+  - ingress/
+  
+  # Secrets and configmaps
+  - secrets/
+  - configmaps/
+
+commonLabels:
+  app.kubernetes.io/name: custom-siem
+  app.kubernetes.io/version: "1.0.0"
+  app.kubernetes.io/part-of: custom-siem
+
+commonAnnotations:
+  custom-siem.com/version: "1.0.0"
+  custom-siem.com/managed-by: kustomize
+
+configMapGenerator:
+  - name: custom-siem-config
+    literals:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - POSTGRES_HOST=postgresql
+      - REDIS_HOST=redis
+      - LOG_LEVEL=INFO
+
+secretGenerator:
+  - name: custom-siem-secrets
+    literals:
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - POSTGRES_PASSWORD=custom_siem_password
+      - ELASTICSEARCH_PASSWORD=changeme
+      - SLACK_WEBHOOK_URL=https://hooks.slack.com/services/xxx/yyy/zzz
+
+patches:
+  - target:
+      kind: Deployment
+      name: backend-api
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/envFrom
+        value:
+          - configMapRef:
+              name: custom-siem-config
+          - secretRef:
+              name: custom-siem-secrets
+
+  - target:
+      kind: Deployment
+      name: rule-engine
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/envFrom
+        value:
+          - configMapRef:
+              name: custom-siem-config
+          - secretRef:
+              name: custom-siem-secrets
+
+images:
+  - name: custom-siem-backend
+    newName: custom-siem/backend-api
+    newTag: "1.0.0"
+  
+  - name: custom-siem-dashboard
+    newName: custom-siem/dashboard
+    newTag: "1.0.0"
+  
+  - name: custom-siem-rule-engine
+    newName: custom-siem/rule-engine
+    newTag: "1.0.0"
+
+replicas:
+  - name: backend-api
+    count: 3
+  
+  - name: dashboard
+    count: 2
+  
+  - name: rule-engine
+    count: 2
+
+vars:
+  - name: ELASTICSEARCH_URL
+    objref:
+      kind: ConfigMap
+      name: custom-siem-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.ELASTICSEARCH_URL
+  
+  - name: KAFKA_BOOTSTRAP_SERVERS
+    objref:
+      kind: ConfigMap
+      name: custom-siem-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.KAFKA_BOOTSTRAP_SERVERS 

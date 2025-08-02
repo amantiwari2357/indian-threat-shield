@@ -1,0 +1,251 @@
+# Custom SIEM Security Rules
+# This file contains detection rules for various security threats
+
+rules:
+  # Failed SSH Login Attempts
+  - id: "SEC001"
+    name: "Multiple Failed SSH Login Attempts"
+    description: "Detect multiple failed SSH login attempts from the same source"
+    type: "THRESHOLD"
+    enabled: true
+    level: "HIGH"
+    category: "SECURITY"
+    pattern: "sshd.*Failed password"
+    condition: "source_ip != null"
+    frequency: 5
+    time_window: 300
+    threshold: 5
+    mitre_attack_technique: "T1078"
+    compliance_framework: "PCI-DSS"
+    tags: "ssh,brute_force,authentication"
+
+  # Successful SSH Login from New IP
+  - id: "SEC002"
+    name: "SSH Login from New IP Address"
+    description: "Detect successful SSH login from previously unseen IP address"
+    type: "CORRELATION"
+    enabled: true
+    level: "MEDIUM"
+    category: "SECURITY"
+    pattern: "sshd.*Accepted password"
+    condition: "source_ip not in known_ips"
+    mitre_attack_technique: "T1078"
+    compliance_framework: "PCI-DSS"
+    tags: "ssh,authentication,new_ip"
+
+  # Privilege Escalation
+  - id: "SEC003"
+    name: "Privilege Escalation via sudo"
+    description: "Detect privilege escalation attempts using sudo"
+    type: "PATTERN"
+    enabled: true
+    level: "HIGH"
+    category: "SECURITY"
+    pattern: "sudo.*COMMAND.*root"
+    mitre_attack_technique: "T1068"
+    compliance_framework: "PCI-DSS"
+    tags: "privilege_escalation,sudo"
+
+  # File Integrity Monitoring
+  - id: "SEC004"
+    name: "Critical File Modification"
+    description: "Detect modifications to critical system files"
+    type: "PATTERN"
+    enabled: true
+    level: "CRITICAL"
+    category: "FILE_INTEGRITY"
+    pattern: "file_modified.*(/etc/passwd|/etc/shadow|/etc/sudoers)"
+    mitre_attack_technique: "T1005"
+    compliance_framework: "PCI-DSS"
+    tags: "file_integrity,critical_files"
+
+  # Network Scanning
+  - id: "SEC005"
+    name: "Port Scanning Activity"
+    description: "Detect port scanning activity from external sources"
+    type: "THRESHOLD"
+    enabled: true
+    level: "MEDIUM"
+    category: "NETWORK"
+    pattern: "connection.*rejected"
+    condition: "source_ip != null"
+    frequency: 10
+    time_window: 60
+    threshold: 10
+    mitre_attack_technique: "T1046"
+    tags: "network_scanning,reconnaissance"
+
+  # Web Application Attacks
+  - id: "SEC006"
+    name: "SQL Injection Attempt"
+    description: "Detect potential SQL injection attempts in web logs"
+    type: "PATTERN"
+    enabled: true
+    level: "HIGH"
+    category: "APPLICATION"
+    pattern: ".*(UNION|SELECT|INSERT|UPDATE|DELETE|DROP|CREATE).*"
+    condition: "request_uri contains sql_patterns"
+    mitre_attack_technique: "T1190"
+    compliance_framework: "OWASP"
+    tags: "sql_injection,web_attack"
+
+  # Malware Detection
+  - id: "SEC007"
+    name: "Suspicious Process Execution"
+    description: "Detect execution of suspicious processes"
+    type: "PATTERN"
+    enabled: true
+    level: "HIGH"
+    category: "SECURITY"
+    pattern: "process.*executed.*(wget|curl|nc|netcat|bash -c)"
+    mitre_attack_technique: "T1059"
+    tags: "malware,process_execution"
+
+  # Data Exfiltration
+  - id: "SEC008"
+    name: "Large Data Transfer"
+    description: "Detect unusually large data transfers"
+    type: "THRESHOLD"
+    enabled: true
+    level: "MEDIUM"
+    category: "SECURITY"
+    pattern: "transfer.*bytes"
+    condition: "bytes_transferred > 1000000000"
+    threshold: 1
+    mitre_attack_technique: "T1041"
+    tags: "data_exfiltration,large_transfer"
+
+  # Account Lockout
+  - id: "SEC009"
+    name: "Account Lockout"
+    description: "Detect account lockout events"
+    type: "PATTERN"
+    enabled: true
+    level: "MEDIUM"
+    category: "SECURITY"
+    pattern: ".*account.*locked"
+    mitre_attack_technique: "T1078"
+    compliance_framework: "PCI-DSS"
+    tags: "account_lockout,authentication"
+
+  # Unauthorized Access
+  - id: "SEC010"
+    name: "Unauthorized Access Attempt"
+    description: "Detect unauthorized access attempts to sensitive resources"
+    type: "PATTERN"
+    enabled: true
+    level: "HIGH"
+    category: "SECURITY"
+    pattern: ".*access.*denied.*(admin|root|privileged)"
+    mitre_attack_technique: "T1078"
+    compliance_framework: "PCI-DSS"
+    tags: "unauthorized_access,privileged_accounts"
+
+  # Compliance Rules
+  - id: "COMP001"
+    name: "PCI-DSS: Failed Authentication"
+    description: "Detect failed authentication attempts for PCI-DSS compliance"
+    type: "THRESHOLD"
+    enabled: true
+    level: "MEDIUM"
+    category: "COMPLIANCE"
+    pattern: ".*authentication.*failed"
+    frequency: 3
+    time_window: 300
+    threshold: 3
+    compliance_framework: "PCI-DSS"
+    tags: "pci_dss,authentication,compliance"
+
+  # Performance Monitoring
+  - id: "PERF001"
+    name: "High CPU Usage"
+    description: "Detect high CPU usage that might indicate resource exhaustion"
+    type: "THRESHOLD"
+    enabled: true
+    level: "LOW"
+    category: "PERFORMANCE"
+    pattern: "cpu.*usage.*percent"
+    condition: "cpu_percent > 90"
+    threshold: 1
+    tags: "performance,cpu_usage"
+
+  # System Health
+  - id: "SYS001"
+    name: "Disk Space Critical"
+    description: "Detect critical disk space usage"
+    type: "PATTERN"
+    enabled: true
+    level: "MEDIUM"
+    category: "SYSTEM"
+    pattern: "disk.*space.*critical"
+    tags: "system_health,disk_space"
+
+# Rule Groups
+rule_groups:
+  - name: "Authentication Security"
+    description: "Rules for monitoring authentication events"
+    rules: ["SEC001", "SEC002", "SEC009"]
+    enabled: true
+
+  - name: "Network Security"
+    description: "Rules for monitoring network activity"
+    rules: ["SEC005", "SEC008"]
+    enabled: true
+
+  - name: "File Integrity"
+    description: "Rules for monitoring file system changes"
+    rules: ["SEC004"]
+    enabled: true
+
+  - name: "Web Application Security"
+    description: "Rules for monitoring web application attacks"
+    rules: ["SEC006"]
+    enabled: true
+
+  - name: "Compliance Monitoring"
+    description: "Rules for compliance frameworks"
+    rules: ["COMP001"]
+    enabled: true
+
+# Rule Actions
+actions:
+  - name: "Email Alert"
+    type: "email"
+    enabled: true
+    config:
+      recipients: ["security@company.com"]
+      subject: "Custom SIEM Alert: {rule_name}"
+      template: "alert_email_template.html"
+
+  - name: "Slack Notification"
+    type: "slack"
+    enabled: true
+    config:
+      webhook_url: "https://hooks.slack.com/services/xxx/yyy/zzz"
+      channel: "#security-alerts"
+      username: "Custom SIEM"
+
+  - name: "Webhook"
+    type: "webhook"
+    enabled: true
+    config:
+      url: "https://api.company.com/security/incidents"
+      method: "POST"
+      headers:
+        Content-Type: "application/json"
+        Authorization: "Bearer {api_token}"
+
+# Rule Scheduling
+schedules:
+  - name: "Business Hours"
+    description: "Active during business hours (9 AM - 6 PM)"
+    enabled: true
+    timezone: "America/New_York"
+    start_time: "09:00"
+    end_time: "18:00"
+    days: ["monday", "tuesday", "wednesday", "thursday", "friday"]
+
+  - name: "24/7 Monitoring"
+    description: "Active 24/7 for critical security events"
+    enabled: true
+    rules: ["SEC001", "SEC003", "SEC004", "SEC007"] 

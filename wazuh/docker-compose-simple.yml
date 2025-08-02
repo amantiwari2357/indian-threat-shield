@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: custom-siem-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - custom-siem-network
+
+  postgres:
+    image: postgres:15
+    container_name: custom-siem-postgres
+    environment:
+      POSTGRES_DB: custom_siem
+      POSTGRES_USER: custom_siem_user
+      POSTGRES_PASSWORD: custom_siem_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - custom-siem-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: custom-siem-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - custom-siem-network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: custom-siem-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - custom-siem-network
+
+volumes:
+  elasticsearch_data:
+  postgres_data:
+  redis_data:
+
+networks:
+  custom-siem-network:
+    driver: bridge 
