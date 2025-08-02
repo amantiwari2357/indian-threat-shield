@@ -438,37 +438,482 @@
         <!-- Security Events Section -->
         <div id="security-events" class="content-section">
             <h2>Security Events</h2>
-            <p>Security events monitoring and analysis...</p>
+            
+            <!-- Agent Information Panel -->
+            <div class="table-container">
+                <div class="table-title">Agent Information</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                    <div><strong>ID:</strong> 004</div>
+                    <div><strong>Status:</strong> <span class="status-online">Active</span></div>
+                    <div><strong>IP:</strong> 47.204.15.21</div>
+                    <div><strong>Version:</strong> v4.3.0</div>
+                    <div><strong>Groups:</strong> default, nodejs, mongodb</div>
+                    <div><strong>OS:</strong> Ubuntu 18.04.6 LTS</div>
+                    <div><strong>Cluster Node:</strong> manager-master</div>
+                    <div><strong>Registration:</strong> Nov 17, 2021 @ 12:01:24.000</div>
+                    <div><strong>Last Keep Alive:</strong> Jan 24, 2022 @ 09:32:55.000</div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title">MITRE Top Tactics</div>
+                    <canvas id="mitreTacticsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Compliance Status</div>
+                    <canvas id="complianceChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">FIM: Recent Events</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Path</th>
+                                <th>Action</th>
+                                <th>Description</th>
+                                <th>Level</th>
+                                <th>Rule ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Jan 24, 2022 @ 09:12:38.919</td>
+                                <td>/var/wazuh/queue/fim/db/fim.db-journal</td>
+                                <td>added</td>
+                                <td>File added to the system.</td>
+                                <td>5</td>
+                                <td>554</td>
+                            </tr>
+                            <tr>
+                                <td>Jan 24, 2022 @ 09:11:18.165</td>
+                                <td>/tmp/wazuh-config</td>
+                                <td>modified</td>
+                                <td>Integrity checksum changed.</td>
+                                <td>7</td>
+                                <td>550</td>
+                            </tr>
+                            <tr>
+                                <td>Jan 24, 2022 @ 08:41:21.777</td>
+                                <td>/var/wazuh/queue/fim/db/fim.db</td>
+                                <td>modified</td>
+                                <td>Integrity checksum changed.</td>
+                                <td>7</td>
+                                <td>550</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Events Count Evolution -->
+            <div class="chart-container">
+                <div class="chart-title">Events Count Evolution</div>
+                <canvas id="eventsEvolutionChart"></canvas>
+            </div>
         </div>
 
         <!-- Integrity Monitoring Section -->
         <div id="integrity-monitoring" class="content-section">
             <h2>Integrity Monitoring</h2>
-            <p>File integrity monitoring and analysis...</p>
+            
+            <!-- File Details -->
+            <div class="table-container">
+                <div class="table-title">File Details: /etc/resolv.conf</div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px;">
+                    <div>
+                        <div><strong>Last Analysis:</strong> Jan 24, 2022 @ 08:47:00.000</div>
+                        <div><strong>User ID:</strong> 0</div>
+                        <div><strong>Size:</strong> 50 Bytes</div>
+                        <div><strong>SHA1:</strong> 54fe34d16ac5bc47c13f25394cd8c2ef3fd8712b</div>
+                        <div><strong>Permissions:</strong> rw-r--r--</div>
+                    </div>
+                    <div>
+                        <div><strong>Last Modified:</strong> Jan 24, 2022 @ 08:46:20.000</div>
+                        <div><strong>Group:</strong> root</div>
+                        <div><strong>Inode:</strong> 71468403</div>
+                        <div><strong>SHA256:</strong> 318ff3d4ec879632daa118a9f2c6784909e908eccafb190393884cde3ba5bb50</div>
+                    </div>
+                    <div>
+                        <div><strong>User:</strong> root</div>
+                        <div><strong>Group ID:</strong> 0</div>
+                        <div><strong>MD5:</strong> 21d3f57756c88b01199b5a81e1a3faf2</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Events -->
+            <div class="table-container">
+                <div class="table-title">Recent Events (23 hits)</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Action</th>
+                            <th>Description</th>
+                            <th>Level</th>
+                            <th>Rule ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Jan 23, 2022 @ 16:40:22.510</td>
+                            <td>modified</td>
+                            <td>Integrity checksum changed.</td>
+                            <td>7</td>
+                            <td>550</td>
+                        </tr>
+                        <tr>
+                            <td>Jan 23, 2022 @ 16:31:25.711</td>
+                            <td>added</td>
+                            <td>File added to the system.</td>
+                            <td>5</td>
+                            <td>554</td>
+                        </tr>
+                        <tr>
+                            <td>Jan 23, 2022 @ 10:22:35.589</td>
+                            <td>modified</td>
+                            <td>Integrity checksum changed.</td>
+                            <td>7</td>
+                            <td>550</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- Agents Section -->
         <div id="agents" class="content-section">
             <h2>Agent Management</h2>
-            <p>Agent status monitoring and management...</p>
+            
+            <!-- Agent Statistics -->
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-value">42</div>
+                    <div class="metric-label">Total Agents</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">32</div>
+                    <div class="metric-label">Active Agents</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">8</div>
+                    <div class="metric-label">Disconnected</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">2</div>
+                    <div class="metric-label">Never Connected</div>
+                </div>
+            </div>
+
+            <!-- Agent Status Chart -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Agent Status Distribution</div>
+                    <canvas id="agentStatusChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Agent Evolution</div>
+                    <canvas id="agentEvolutionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Agents Table -->
+            <div class="table-container">
+                <div class="table-title">Agents (42)</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>IP</th>
+                            <th>Group(s)</th>
+                            <th>OS</th>
+                            <th>Cluster Node</th>
+                            <th>Version</th>
+                            <th>Registration Date</th>
+                            <th>Last Keep Alive</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>001</td>
+                            <td>RHEL7</td>
+                            <td>187.54.247.68</td>
+                            <td>default, rhel</td>
+                            <td>Red Hat Enterprise Linux Server...</td>
+                            <td>manager-master</td>
+                            <td>v4.3.0</td>
+                            <td>Sep 09, 2021 @ 14:1...</td>
+                            <td>Jan 24, 2022 @ 9:32...</td>
+                            <td><span class="status-online">• active</span></td>
+                            <td>👁️ 🔧</td>
+                        </tr>
+                        <tr>
+                            <td>002</td>
+                            <td>Amazon</td>
+                            <td>145.80.240.15</td>
+                            <td>default, amazon</td>
+                            <td>Amazon Linux 2</td>
+                            <td>manager-master</td>
+                            <td>v4.3.0</td>
+                            <td>Oct 24, 2021 @ 10:4...</td>
+                            <td>Jan 24, 2022 @ 9:32...</td>
+                            <td><span class="status-online">• active</span></td>
+                            <td>👁️ 🔧</td>
+                        </tr>
+                        <tr>
+                            <td>009</td>
+                            <td>macos_desktop</td>
+                            <td>10.0.0.180</td>
+                            <td>default, desktop</td>
+                            <td>Manjaro 21.2.0</td>
+                            <td>manager-master</td>
+                            <td>v4.2.4</td>
+                            <td>Dec 15, 2021 @ 11:2...</td>
+                            <td>Jan 24, 2022 @ 9:32...</td>
+                            <td><span class="status-warning">• never connected</span></td>
+                            <td>👁️ 🔧</td>
+                        </tr>
+                        <tr>
+                            <td>010</td>
+                            <td>centos7_web_server</td>
+                            <td>192.168.1.100</td>
+                            <td>default, centos, web</td>
+                            <td>Centos Linux 7.6</td>
+                            <td>manager-master</td>
+                            <td>v4.3.0</td>
+                            <td>Nov 20, 2021 @ 09:1...</td>
+                            <td>Jan 24, 2022 @ 9:32...</td>
+                            <td><span class="status-offline">• disconnected</span></td>
+                            <td>👁️ 🔧</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- Vulnerabilities Section -->
         <div id="vulnerabilities" class="content-section">
             <h2>Vulnerabilities</h2>
-            <p>Vulnerability assessment and monitoring...</p>
+            
+            <!-- Severity Summary -->
+            <div class="metrics-row">
+                <div class="metric-card" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                    <div class="metric-value">450</div>
+                    <div class="metric-label">Critical Severity Alerts</div>
+                </div>
+                <div class="metric-card" style="background: linear-gradient(135deg, #fd7e14 0%, #e55a00 100%);">
+                    <div class="metric-value">725</div>
+                    <div class="metric-label">High Severity Alerts</div>
+                </div>
+                <div class="metric-card" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);">
+                    <div class="metric-value">1260</div>
+                    <div class="metric-label">Medium Severity Alerts</div>
+                </div>
+                <div class="metric-card" style="background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);">
+                    <div class="metric-value">565</div>
+                    <div class="metric-label">Low Severity Alerts</div>
+                </div>
+            </div>
+
+            <!-- Vulnerability Charts -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Most Affected Agents</div>
+                    <canvas id="affectedAgentsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Alerts Severity Evolution</div>
+                    <canvas id="severityEvolutionChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Most Common CVEs</div>
+                    <canvas id="commonCVEsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Top Affected Packages Evolution</div>
+                    <canvas id="packagesEvolutionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Affected Packages -->
+            <div class="chart-container">
+                <div class="chart-title">Top Affected Packages by CVEs</div>
+                <canvas id="packagesCVEsChart"></canvas>
+            </div>
+
+            <!-- Most Common CWEs -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Most Common CWEs</div>
+                    <canvas id="commonCWEsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Agents by Severity</div>
+                    <canvas id="agentsSeverityChart"></canvas>
+                </div>
+            </div>
         </div>
 
         <!-- Compliance Section -->
         <div id="compliance" class="content-section">
             <h2>Compliance Center</h2>
-            <p>Compliance framework monitoring...</p>
+            
+            <!-- PCI DSS Charts -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title">PCI DSS Requirements</div>
+                    <canvas id="pciRequirementsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Top 10 Agents by Alerts Number</div>
+                    <canvas id="topAgentsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Requirements Over Time -->
+            <div class="chart-container">
+                <div class="chart-title">Top Requirements Over Time</div>
+                <canvas id="requirementsTimeChart"></canvas>
+            </div>
+
+            <!-- Last Alerts and Requirements by Agent -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Last Alerts</div>
+                    <canvas id="lastAlertsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Requirements by Agent</div>
+                    <canvas id="requirementsAgentChart"></canvas>
+                </div>
+            </div>
         </div>
 
         <!-- Modules Section -->
         <div id="modules" class="content-section">
             <h2>Security Modules</h2>
-            <p>Security modules status and configuration...</p>
+            
+            <!-- Module Categories -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                
+                <!-- Security Information Management -->
+                <div class="chart-container">
+                    <h3>SECURITY INFORMATION MANAGEMENT</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">Security Events</div>
+                            <div style="font-size: 0.9em; color: #666;">Browse through your security alerts, identifying issues and threats in your environment.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">Integrity Monitoring</div>
+                            <div style="font-size: 0.9em; color: #666;">Alerts related to file changes, including permissions, content, ownership and attributes.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">Amazon AWS</div>
+                            <div style="font-size: 0.9em; color: #666;">Security events related to your Amazon AWS services, collected directly via AWS API.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">Office 365</div>
+                            <div style="font-size: 0.9em; color: #666;">Security events related to your Office 365 services.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">Google Cloud Platform</div>
+                            <div style="font-size: 0.9em; color: #666;">Security events related to your Google Cloud Platform services, collected directly via GCP API.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">GitHub</div>
+                            <div style="font-size: 0.9em; color: #666;">Monitoring events from audit logs of your GitHub organizations.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auditing and Policy Monitoring -->
+                <div class="chart-container">
+                    <h3>AUDITING AND POLICY MONITORING</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">Policy Monitoring</div>
+                            <div style="font-size: 0.9em; color: #666;">Verify that your systems are configured according to your security policies baseline.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">System Auditing</div>
+                            <div style="font-size: 0.9em; color: #666;">Audit users behavior, monitoring command execution and alerting on access to critical files.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">OpenSCAP</div>
+                            <div style="font-size: 0.9em; color: #666;">Configuration assessment and automation of compliance monitoring using SCAP checks.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">CIS-CAT</div>
+                            <div style="font-size: 0.9em; color: #666;">Configuration assessment using Center of Internet Security scanner and SCAP checks.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">Security Configuration Assessment</div>
+                            <div style="font-size: 0.9em; color: #666;">Scan your assets as part of a configuration assessment audit.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Threat Detection and Response -->
+                <div class="chart-container">
+                    <h3>THREAT DETECTION AND RESPONSE</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">Vulnerabilities</div>
+                            <div style="font-size: 0.9em; color: #666;">Discover what applications in your environment are affected by well-known vulnerabilities.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">VirusTotal</div>
+                            <div style="font-size: 0.9em; color: #666;">Alerts resulting from VirusTotal analysis of suspicious files via an integration with their API.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">Osquery</div>
+                            <div style="font-size: 0.9em; color: #666;">Osquery can be used to expose an operating system as a high-performance relational database.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">Docker Listener</div>
+                            <div style="font-size: 0.9em; color: #666;">Monitor and collect the activity from Docker containers such as creation, running, starting, stopping or pausing events.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">MITRE ATT&CK</div>
+                            <div style="font-size: 0.9em; color: #666;">Security events from the knowledge base of adversary tactics and techniques based on real-world observations.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Regulatory Compliance -->
+                <div class="chart-container">
+                    <h3>REGULATORY COMPLIANCE</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">PCI DSS</div>
+                            <div style="font-size: 0.9em; color: #666;">Global security standard for entities that process, store or transmit payment cardholder data.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">NIST 800-53</div>
+                            <div style="font-size: 0.9em; color: #666;">National Institute of Standards and Technology Special Publication 800-53 (NIST 800-53) sets guidelines for federal information systems.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">TSC</div>
+                            <div style="font-size: 0.9em; color: #666;">Trust Services Criteria for Security, Availability, Processing Integrity, Confidentiality, and Privacy</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">GDPR</div>
+                            <div style="font-size: 0.9em; color: #666;">General Data Protection Regulation (GDPR) sets guidelines for processing of personal data.</div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">HIPAA</div>
+                            <div style="font-size: 0.9em; color: #666;">Health Insurance Portability and Accountability Act of 1996 (HIPAA) provides data privacy and security provisions for safeguarding medical information.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -729,6 +1174,346 @@
                     }
                 }
             });
+
+            // MITRE Tactics Chart
+            const mitreTacticsCtx = document.getElementById('mitreTacticsChart');
+            if (mitreTacticsCtx) {
+                new Chart(mitreTacticsCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Lateral Movement', 'Credential Access', 'Collection', 'Impact', 'Initial Access'],
+                        datasets: [{
+                            data: [207, 84, 57, 57, 32],
+                            backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#28a745', '#6f42c1']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Compliance Chart
+            const complianceCtx = document.getElementById('complianceChart');
+            if (complianceCtx) {
+                new Chart(complianceCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['11.4', '2.2', '10.2.4', '10.2.5', '6.5'],
+                        datasets: [{
+                            data: [542, 405, 320, 216, 207],
+                            backgroundColor: ['#28a745', '#007bff', '#dc3545', '#6f42c1', '#fd7e14']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Events Evolution Chart
+            const eventsEvolutionCtx = document.getElementById('eventsEvolutionChart');
+            if (eventsEvolutionCtx) {
+                new Chart(eventsEvolutionCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan 18', 'Jan 19', 'Jan 20', 'Jan 21', 'Jan 22', 'Jan 23', 'Jan 24'],
+                        datasets: [{
+                            label: 'Events Count',
+                            data: [50, 45, 60, 55, 70, 65, 250],
+                            borderColor: '#007bff',
+                            tension: 0.4,
+                            fill: true,
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Agent Status Chart
+            const agentStatusCtx = document.getElementById('agentStatusChart');
+            if (agentStatusCtx) {
+                new Chart(agentStatusCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Active', 'Disconnected', 'Never Connected'],
+                        datasets: [{
+                            data: [32, 8, 2],
+                            backgroundColor: ['#28a745', '#dc3545', '#6c757d']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Agent Evolution Chart
+            const agentEvolutionCtx = document.getElementById('agentEvolutionChart');
+            if (agentEvolutionCtx) {
+                new Chart(agentEvolutionCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['2022-01-19 00:00', '2022-01-20 00:00', '2022-01-21 00:00', '2022-01-22 00:00', '2022-01-23 00:00'],
+                        datasets: [{
+                            label: 'never_connected',
+                            data: [2, 2, 2, 2, 2],
+                            borderColor: '#6c757d',
+                            tension: 0.4
+                        }, {
+                            label: 'disconnected',
+                            data: [8, 8, 8, 8, 8],
+                            borderColor: '#dc3545',
+                            tension: 0.4
+                        }, {
+                            label: 'active',
+                            data: [32, 32, 32, 32, 32],
+                            borderColor: '#28a745',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Affected Agents Chart
+            const affectedAgentsCtx = document.getElementById('affectedAgentsChart');
+            if (affectedAgentsCtx) {
+                new Chart(affectedAgentsCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['.Net server', 'Ubuntu', 'Centos', 'Debian', 'Windows'],
+                        datasets: [{
+                            data: [25, 30, 20, 15, 10],
+                            backgroundColor: ['#dc3545', '#28a745', '#007bff', '#6f42c1', '#ffc107']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Severity Evolution Chart
+            const severityEvolutionCtx = document.getElementById('severityEvolutionChart');
+            if (severityEvolutionCtx) {
+                new Chart(severityEvolutionCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['2022-01-18 00:00', '2022-01-19 00:00', '2022-01-20 00:00', '2022-01-21 00:00', '2022-01-22 00:00', '2022-01-23 00:00', '2022-01-24 00:00'],
+                        datasets: [{
+                            label: 'High',
+                            data: [15, 20, 18, 25, 22, 30, 35],
+                            borderColor: '#fd7e14',
+                            tension: 0.4,
+                            fill: true,
+                            backgroundColor: 'rgba(253, 126, 20, 0.1)'
+                        }, {
+                            label: 'Critical',
+                            data: [5, 8, 6, 12, 10, 15, 18],
+                            borderColor: '#dc3545',
+                            tension: 0.4,
+                            fill: true,
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)'
+                        }, {
+                            label: 'Medium',
+                            data: [25, 30, 28, 35, 32, 40, 45],
+                            borderColor: '#6f42c1',
+                            tension: 0.4,
+                            fill: true,
+                            backgroundColor: 'rgba(111, 66, 193, 0.1)'
+                        }, {
+                            label: 'Low',
+                            data: [10, 15, 12, 18, 16, 22, 25],
+                            borderColor: '#fd7e14',
+                            tension: 0.4,
+                            fill: true,
+                            backgroundColor: 'rgba(253, 126, 20, 0.1)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Common CVEs Chart
+            const commonCVEsCtx = document.getElementById('commonCVEsChart');
+            if (commonCVEsCtx) {
+                new Chart(commonCVEsCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['CVE-2020-1927', 'CVE-2013-4235', 'CVE-2018-7738', 'CVE-2020-1752', 'CVE-2018-15919'],
+                        datasets: [{
+                            data: [35, 25, 20, 15, 5],
+                            backgroundColor: ['#28a745', '#ffc107', '#6f42c1', '#fd7e14', '#dc3545']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Packages Evolution Chart
+            const packagesEvolutionCtx = document.getElementById('packagesEvolutionChart');
+            if (packagesEvolutionCtx) {
+                new Chart(packagesEvolutionCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['2022-01-19 00:00', '2022-01-20 00:00', '2022-01-21 00:00', '2022-01-22 00:00', '2022-01-23 00:00'],
+                        datasets: [{
+                            label: 'python3-yaml',
+                            data: [8, 10, 12, 15, 18],
+                            backgroundColor: '#6f42c1'
+                        }, {
+                            label: 'uuid-runtime',
+                            data: [5, 7, 9, 12, 15],
+                            backgroundColor: '#28a745'
+                        }, {
+                            label: 'libxrandr2',
+                            data: [3, 5, 7, 10, 12],
+                            backgroundColor: '#fd7e14'
+                        }, {
+                            label: 'libc-bin',
+                            data: [2, 4, 6, 8, 10],
+                            backgroundColor: '#ffc107'
+                        }, {
+                            label: 'login',
+                            data: [1, 3, 5, 7, 9],
+                            backgroundColor: '#007bff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Common CWEs Chart
+            const commonCWEsCtx = document.getElementById('commonCWEsChart');
+            if (commonCWEsCtx) {
+                new Chart(commonCWEsCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['CWE-125', 'CWE-601', 'CWE-119', 'CWE-120', 'NVD-CWE-noinfo'],
+                        datasets: [{
+                            data: [30, 25, 20, 15, 10],
+                            backgroundColor: ['#fd7e14', '#28a745', '#ffc107', '#007bff', '#dc3545']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // PCI Requirements Chart
+            const pciRequirementsCtx = document.getElementById('pciRequirementsChart');
+            if (pciRequirementsCtx) {
+                new Chart(pciRequirementsCtx.getContext('2d'), {
+                    type: 'bubble',
+                    data: {
+                        datasets: [{
+                            label: 'PCI DSS Requirements',
+                            data: [
+                                { x: 1, y: 100, r: 20 },
+                                { x: 2, y: 200, r: 30 },
+                                { x: 3, y: 150, r: 25 },
+                                { x: 4, y: 300, r: 35 },
+                                { x: 5, y: 250, r: 28 }
+                            ],
+                            backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#28a745', '#007bff']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Top Agents Chart
+            const topAgentsCtx = document.getElementById('topAgentsChart');
+            if (topAgentsCtx) {
+                new Chart(topAgentsCtx.getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: ['.Net server', 'macos_desktop', 'manjaro_desktop', 'ubuntu_web_server2', 'Debian', 'Centos', 'Amazon', 'ubuntu_web_server', 'jenkins', 'backup_server'],
+                        datasets: [{
+                            data: [15, 12, 10, 8, 7, 6, 5, 4, 3, 2],
+                            backgroundColor: ['#007bff', '#6f42c1', '#fd7e14', '#28a745', '#fd7e14', '#007bff', '#dc3545', '#28a745', '#17a2b8', '#ffc107']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
         }
 
         // Initialize when page loads

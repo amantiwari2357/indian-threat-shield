@@ -28,9 +28,9 @@ start "TMEN SIEM Backend" python tmen_siem_backend.py
 REM Wait a moment for the server to start
 timeout /t 3 /nobreak >nul
 
-REM Open the frontend in default browser
-echo Opening TMEN SIEM Frontend...
-start "" "tmen_siem_dashboard.html"
+            REM Open the frontend in default browser
+            echo Opening TMEN SIEM Frontend...
+            start "" "tmen_siem_complete.html"
 
 echo.
 echo ========================================

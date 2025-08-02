@@ -163,14 +163,15 @@ The frontend connects to the backend API at `http://localhost:5000`. To change t
 ## Development
 
 ### Project Structure
-```
-wazuh/
-├── tmen_siem_dashboard.html    # Main dashboard interface
-├── tmen_siem_backend.py        # Backend API server
-├── requirements.txt            # Python dependencies
-├── run_tmen_siem.bat          # Windows startup script
-└── README_TMEN_SIEM.md        # This documentation
-```
+            ```
+            wazuh/
+            ├── tmen_siem_complete.html     # Complete dashboard with all 7 sections
+            ├── tmen_siem_dashboard.html    # Basic dashboard interface
+            ├── tmen_siem_backend.py        # Backend API server
+            ├── requirements.txt            # Python dependencies
+            ├── run_tmen_siem.bat          # Windows startup script
+            └── README_TMEN_SIEM.md        # This documentation
+            ```
 
 ### Adding New Features
 1. **Backend**: Add new API endpoints in `tmen_siem_backend.py`
