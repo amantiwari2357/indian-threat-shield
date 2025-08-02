@@ -1476,6 +1476,216 @@
 
     <script>
         // TMEN SIEM Unified Dashboard JavaScript
+        // TMEN SIEM Real-time API Configuration
+        const API_BASE = 'http://localhost:5000/api';
+        let realTimeData = {
+            systemMetrics: {},
+            alerts: [],
+            logs: [],
+            agents: [],
+            threats: [],
+            compliance: {}
+        };
+
+        // Real-time API functions
+        async function fetchSystemMetrics() {
+            try {
+                const response = await fetch(`${API_BASE}/system/metrics`);
+                const data = await response.json();
+                realTimeData.systemMetrics = data;
+                updateSystemMetrics(data);
+                return data;
+            } catch (error) {
+                console.error('TMEN SIEM: Error fetching system metrics:', error);
+                return null;
+            }
+        }
+
+        async function fetchAlerts() {
+            try {
+                const response = await fetch(`${API_BASE}/alerts`);
+                const data = await response.json();
+                realTimeData.alerts = data.alerts || [];
+                updateAlertsDisplay(data.alerts || []);
+                return data;
+            } catch (error) {
+                console.error('TMEN SIEM: Error fetching alerts:', error);
+                return null;
+            }
+        }
+
+        async function fetchLogs() {
+            try {
+                const response = await fetch(`${API_BASE}/logs`);
+                const data = await response.json();
+                realTimeData.logs = data.logs || [];
+                updateLogsDisplay(data.logs || []);
+                return data;
+            } catch (error) {
+                console.error('TMEN SIEM: Error fetching logs:', error);
+                return null;
+            }
+        }
+
+        async function fetchAgents() {
+            try {
+                const response = await fetch(`${API_BASE}/agents`);
+                const data = await response.json();
+                realTimeData.agents = data.agents || [];
+                updateAgentsDisplay(data.agents || []);
+                return data;
+            } catch (error) {
+                console.error('TMEN SIEM: Error fetching agents:', error);
+                return null;
+            }
+        }
+
+        async function fetchThreats() {
+            try {
+                const response = await fetch(`${API_BASE}/network/threats`);
+                const data = await response.json();
+                realTimeData.threats = data.threats || [];
+                updateThreatsDisplay(data.threats || []);
+                return data;
+            } catch (error) {
+                console.error('TMEN SIEM: Error fetching threats:', error);
+                return null;
+            }
+        }
+
+        async function fetchDashboardOverview() {
+            try {
+                const response = await fetch(`${API_BASE}/dashboard/overview`);
+                const data = await response.json();
+                updateDashboardOverview(data);
+                return data;
+            } catch (error) {
+                console.error('TMEN SIEM: Error fetching dashboard overview:', error);
+                return null;
+            }
+        }
+
+        // Update display functions
+        function updateSystemMetrics(metrics) {
+            if (metrics) {
+                const cpuElement = document.getElementById('cpu-usage');
+                const memoryElement = document.getElementById('memory-usage');
+                const diskElement = document.getElementById('disk-usage');
+                
+                if (cpuElement) cpuElement.textContent = metrics.cpu_usage + '%';
+                if (memoryElement) memoryElement.textContent = metrics.memory_usage + '%';
+                if (diskElement) diskElement.textContent = metrics.disk_usage + '%';
+            }
+        }
+
+        function updateAlertsDisplay(alerts) {
+            const alertsContainer = document.getElementById('alerts-container');
+            if (alertsContainer && alerts.length > 0) {
+                alertsContainer.innerHTML = alerts.slice(0, 5).map(alert => `
+                    <div class="alert-item ${alert.severity}">
+                        <div class="alert-header">
+                            <span class="alert-severity">${alert.severity.toUpperCase()}</span>
+                            <span class="alert-time">${new Date(alert.timestamp).toLocaleTimeString()}</span>
+                        </div>
+                        <div class="alert-message">${alert.message}</div>
+                        <div class="alert-source">Source: ${alert.source}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateLogsDisplay(logs) {
+            const logsContainer = document.getElementById('logs-container');
+            if (logsContainer && logs.length > 0) {
+                logsContainer.innerHTML = logs.slice(0, 5).map(log => `
+                    <div class="log-item ${log.level}">
+                        <div class="log-header">
+                            <span class="log-level">${log.level.toUpperCase()}</span>
+                            <span class="log-time">${new Date(log.timestamp).toLocaleTimeString()}</span>
+                        </div>
+                        <div class="log-message">${log.message}</div>
+                        <div class="log-source">Source: ${log.source}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateAgentsDisplay(agents) {
+            const agentsContainer = document.getElementById('agents-container');
+            if (agentsContainer && agents.length > 0) {
+                agentsContainer.innerHTML = agents.slice(0, 5).map(agent => `
+                    <div class="agent-item ${agent.status}">
+                        <div class="agent-header">
+                            <span class="agent-name">${agent.name}</span>
+                            <span class="agent-status ${agent.status}">${agent.status}</span>
+                        </div>
+                        <div class="agent-info">OS: ${agent.os} | Version: ${agent.version}</div>
+                        <div class="agent-last-seen">Last seen: ${new Date(agent.last_seen).toLocaleTimeString()}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateThreatsDisplay(threats) {
+            const threatsContainer = document.getElementById('threats-container');
+            if (threatsContainer && threats.length > 0) {
+                threatsContainer.innerHTML = threats.slice(0, 5).map(threat => `
+                    <div class="threat-item ${threat.severity}">
+                        <div class="threat-header">
+                            <span class="threat-type">${threat.type}</span>
+                            <span class="threat-severity">${threat.severity}</span>
+                        </div>
+                        <div class="threat-description">${threat.description}</div>
+                        <div class="threat-source">Source IP: ${threat.source_ip}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateDashboardOverview(data) {
+            if (data) {
+                const totalAlertsElement = document.getElementById('total-alerts');
+                const criticalAlertsElement = document.getElementById('critical-alerts');
+                const activeAgentsElement = document.getElementById('active-agents');
+                const threatsBlockedElement = document.getElementById('threats-blocked');
+                
+                if (totalAlertsElement) totalAlertsElement.textContent = data.total_alerts || 0;
+                if (criticalAlertsElement) criticalAlertsElement.textContent = data.critical_alerts || 0;
+                if (activeAgentsElement) activeAgentsElement.textContent = data.active_agents || 0;
+                if (threatsBlockedElement) threatsBlockedElement.textContent = data.threats_blocked || 0;
+            }
+        }
+
+        // Real-time refresh function
+        async function refreshAllData() {
+            console.log('TMEN SIEM: Refreshing real-time data...');
+            
+            await Promise.all([
+                fetchSystemMetrics(),
+                fetchAlerts(),
+                fetchLogs(),
+                fetchAgents(),
+                fetchThreats(),
+                fetchDashboardOverview()
+            ]);
+        }
+
+        // Start real-time updates
+        function startRealTimeUpdates() {
+            // Initial data load
+            refreshAllData();
+            
+            // Set up periodic refresh
+            setInterval(refreshAllData, 5000); // Refresh every 5 seconds
+            
+            console.log('TMEN SIEM: Real-time updates started');
+        }
+
+        // Stop real-time updates
+        function stopRealTimeUpdates() {
+            console.log('TMEN SIEM: Real-time updates stopped');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 TMEN SIEM Unified Dashboard Initialized');
             
